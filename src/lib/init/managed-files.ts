@@ -7,5 +7,6 @@ import { README_CONTENT } from './readme-content.js'
 export const MANAGED_FILES: Record<string, ManagedFileTemplate> = {
   'issues/': { type: 'directory' },
   'docs/': { type: 'directory' },
+  'assets/': { type: 'directory' },
   'README.md': { type: 'file', content: README_CONTENT },
 }

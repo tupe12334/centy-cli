@@ -3,18 +3,21 @@
   "language": "en,he",
   "words": [
     "centy",
-    "tupe",
-    "pnpm",
-    "vitest",
-    "husky",
-    "eslint",
-    "tsconfig",
-    "esbenp",
+    "choosealicense",
     "commitlint",
-    "knip",
     "CRDT",
-    "שלום",
-    "עולם"
+    "esbenp",
+    "eslint",
+    "husky",
+    "knip",
+    "lintstagedrc",
+    "pnpm",
+    "tsconfig",
+    "tupe",
+    "unittests",
+    "vitest",
+    "עולם",
+    "שלום"
   ],
   "languageSettings": [
     {

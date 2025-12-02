@@ -204,8 +204,8 @@ pnpm add -D husky lint-staged
 # Commit message linting
 pnpm add -D @commitlint/cli @commitlint/config-conventional
 
-# Spell checking
-pnpm add -D cspell
+# Spell checking with Hebrew dictionary
+pnpm add -D cspell @cspell/dict-he
 
 # Knip for finding unused files, dependencies, and exports
 pnpm add -D knip
@@ -336,7 +336,7 @@ import publishablePackageJson from 'eslint-config-publishable-package-json'
 
 export default [
   ...agentConfig,
-  ...publishablePackageJson,
+  publishablePackageJson,
   {
     ignores: ['dist/**', 'node_modules/**', '*.config.js', '*.config.mjs'],
   },
@@ -392,6 +392,7 @@ Spell checking configuration for the project with Hebrew support:
 {
   "version": "0.2",
   "language": "en,he",
+  "dictionaries": ["he"],
   "words": ["tupe", "pnpm", "vitest", "husky", "eslint", "tsconfig", "esbenp"],
   "languageSettings": [
     {
@@ -411,7 +412,9 @@ Spell checking configuration for the project with Hebrew support:
 
 **Note**:
 
-- Hebrew language support is enabled via `language: "en,he"` and `languageSettings`
+- Hebrew language support requires the `@cspell/dict-he` package (installed in dependencies)
+- The `dictionaries: ["he"]` enables the Hebrew dictionary
+- `language: "en,he"` sets both English and Hebrew as recognized languages
 - Add project-specific words to the `words` array as needed
 - The spell checker will now recognize both English and Hebrew text
 
@@ -1030,6 +1033,9 @@ pnpm-debug.log*
 .claude-container/
 eslint-report.json
 
+# Playwright MCP
+.playwright-mcp/
+
 # Temporary files
 *.tmp
 .cache/
@@ -1535,7 +1541,7 @@ Version: X.X.X
   - TypeScript
   - ESLint@latest + eslint-config-agent@latest
   - Prettier
-  - cspell (spell checking)
+  - cspell + @cspell/dict-he (spell checking with Hebrew support)
   - knip (unused code detection)
   - commitlint + @commitlint/config-conventional (commit message linting)
   - Husky + lint-staged (git hooks)

@@ -17,7 +17,8 @@ describe('cli', () => {
       if (cwd !== undefined) {
         env['CENTY_CWD'] = cwd
       }
-      const proc = spawn('node', [devScript, ...args], {
+      // Use tsx to run the dev script with TypeScript support
+      const proc = spawn('npx', ['tsx', devScript, ...args], {
         cwd: PROJECT_ROOT,
         env,
       })

@@ -86,7 +86,8 @@
     "release-it": "^19.0.6",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.15"
+    "vitest": "^4.0.15",
+    "memfs": "^4.51.1"
   },
   "dependencies": {
     "@oclif/core": "^4.8.0",

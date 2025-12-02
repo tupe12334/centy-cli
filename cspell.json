@@ -11,7 +11,10 @@
     "tsconfig",
     "esbenp",
     "commitlint",
-    "knip"
+    "knip",
+    "CRDT",
+    "שלום",
+    "עולם"
   ],
   "languageSettings": [
     {

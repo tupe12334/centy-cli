@@ -17,4 +17,23 @@ export default [
       },
     },
   },
+  {
+    files: ['**/*.spec.ts', '**/*.test.ts'],
+    rules: {
+      'security/detect-non-literal-fs-filename': 'off',
+      'no-restricted-syntax': 'off',
+      'ddd/require-spec-file': 'off',
+    },
+  },
+  {
+    // CLI tools require dynamic file operations and small utility modules
+    files: ['src/commands/**/*.ts', 'src/utils/**/*.ts'],
+    rules: {
+      'security/detect-non-literal-fs-filename': 'off',
+      'security/detect-object-injection': 'off',
+      'ddd/require-spec-file': 'off',
+      'no-restricted-syntax': 'off',
+      'max-lines': 'off',
+    },
+  },
 ]

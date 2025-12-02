@@ -1,13 +1,25 @@
 import { spawn } from 'child_process'
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { mkdir, rm, readdir, readFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
+
+const PROJECT_ROOT = process.cwd()
 
 describe('cli', () => {
   const runCli = (
-    args: string[]
+    args: string[],
+    cwd?: string
   ): Promise<{ stdout: string; stderr: string; code: number | null }> => {
     return new Promise(resolve => {
-      const proc = spawn('node', ['--import', 'tsx', 'src/cli.ts', ...args], {
-        cwd: process.cwd(),
+      const cliPath = join(PROJECT_ROOT, 'src/cli.ts')
+      const env = { ...process.env }
+      if (cwd !== undefined) {
+        env['CENTY_CWD'] = cwd
+      }
+      const proc = spawn('node', ['--import', 'tsx', cliPath, ...args], {
+        cwd: PROJECT_ROOT,
+        env,
       })
       let stdout = ''
       let stderr = ''
@@ -66,6 +78,65 @@ describe('cli', () => {
       const result = await runCli(['unknown'])
       expect(result.stdout).toContain('Unknown command: unknown')
       expect(result.code).toBe(1)
+    })
+  })
+
+  describe('init', () => {
+    let tempDir: string
+
+    beforeEach(async () => {
+      tempDir = join(tmpdir(), `centy-test-${Date.now()}`)
+      await mkdir(tempDir, { recursive: true })
+    })
+
+    afterEach(async () => {
+      await rm(tempDir, { recursive: true, force: true })
+    })
+
+    it('should create .centy folder with force flag', async () => {
+      const result = await runCli(['init', '--force'], tempDir)
+      expect(result.code).toBe(0)
+      expect(result.stdout).toContain('Creating .centy folder')
+      expect(result.stdout).toContain('Successfully initialized')
+
+      // Verify folder structure
+      const centyPath = join(tempDir, '.centy')
+      const entries = await readdir(centyPath)
+      expect(entries).toContain('issues')
+      expect(entries).toContain('docs')
+      expect(entries).toContain('README.md')
+      expect(entries).toContain('.centy-manifest.json')
+    })
+
+    it('should create README.md with correct content', async () => {
+      await runCli(['init', '--force'], tempDir)
+
+      const readmePath = join(tempDir, '.centy', 'README.md')
+      const content = await readFile(readmePath, 'utf8')
+      expect(content).toContain('For AI Assistants')
+      expect(content).toContain('issues/')
+      expect(content).toContain('docs/')
+    })
+
+    it('should create manifest file', async () => {
+      await runCli(['init', '--force'], tempDir)
+
+      const manifestPath = join(tempDir, '.centy', '.centy-manifest.json')
+      const content = await readFile(manifestPath, 'utf8')
+      const manifest = JSON.parse(content)
+      expect(manifest.schemaVersion).toBe(1)
+      expect(manifest.managedFiles).toBeInstanceOf(Array)
+      expect(manifest.managedFiles.length).toBeGreaterThan(0)
+    })
+
+    it('should detect existing folder and report', async () => {
+      // First init
+      await runCli(['init', '--force'], tempDir)
+
+      // Second init
+      const result = await runCli(['init', '--force'], tempDir)
+      expect(result.code).toBe(0)
+      expect(result.stdout).toContain('Found existing .centy folder')
     })
   })
 })

@@ -46,6 +46,26 @@ function convertCustomFields(
 }
 
 /**
+ * Convert string priority to numeric priority
+ * 1 = high (highest), 2 = medium, 3 = low
+ * 0 = use default
+ */
+function convertPriority(
+  priority: 'low' | 'medium' | 'high' | undefined
+): number {
+  switch (priority) {
+    case 'high':
+      return 1
+    case 'medium':
+      return 2
+    case 'low':
+      return 3
+    default:
+      return 0 // use default
+  }
+}
+
+/**
  * Create a new issue in the .centy/issues folder
  * Requires daemon to be running
  */
@@ -74,7 +94,7 @@ export async function createIssue(
       projectPath: cwd,
       title: input.title,
       description: input.description,
-      priority: opts.priority ?? 'medium',
+      priority: convertPriority(opts.priority),
       status: opts.status ?? 'open',
       customFields: convertCustomFields(opts.customFields),
     })

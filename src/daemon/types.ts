@@ -79,7 +79,7 @@ export interface CreateIssueRequest {
   projectPath: string
   title: string
   description: string
-  priority: string
+  priority: number // 1 = highest priority, 0 = use default
   status: string
   customFields: Record<string, string>
 }

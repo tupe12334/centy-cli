@@ -90,7 +90,7 @@ describe('createIssue integration tests', () => {
         projectPath: '/project',
         title: 'Test Issue',
         description: 'This is a test',
-        priority: 'medium',
+        priority: 0, // default (no priority specified)
         status: 'open',
         customFields: {},
       })
@@ -115,7 +115,7 @@ describe('createIssue integration tests', () => {
         projectPath: '/project',
         title: 'High Priority Issue',
         description: '',
-        priority: 'high',
+        priority: 1, // high = 1
         status: 'in-progress',
         customFields: {},
       })
@@ -135,7 +135,7 @@ describe('createIssue integration tests', () => {
 
       expect(mockDaemonCreateIssue).toHaveBeenCalledWith(
         expect.objectContaining({
-          priority: 'medium',
+          priority: 0, // default (no priority specified)
           status: 'open',
         })
       )

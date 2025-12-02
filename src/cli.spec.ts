@@ -2,8 +2,22 @@ import { mkdir, rm, readdir, readFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { Writable } from 'node:stream'
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
-import { init } from './lib/init/index.js'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+
+// Mock daemon client to force local fallback
+vi.mock('./daemon/daemon-get-reconciliation-plan.js', () => ({
+  daemonGetReconciliationPlan: vi
+    .fn()
+    .mockRejectedValue(new Error('ECONNREFUSED')),
+}))
+
+vi.mock('./daemon/daemon-execute-reconciliation.js', () => ({
+  daemonExecuteReconciliation: vi
+    .fn()
+    .mockRejectedValue(new Error('ECONNREFUSED')),
+}))
+
+const { init } = await import('./lib/init/index.js')
 
 /**
  * Create a writable stream that captures output to a string

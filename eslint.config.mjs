@@ -47,4 +47,14 @@ export default [
       'max-lines': 'off',
     },
   },
+  {
+    // Daemon client modules use gRPC which requires type assertions and multiple exports
+    files: ['src/daemon/**/*.ts'],
+    rules: {
+      'ddd/require-spec-file': 'off',
+      'no-restricted-syntax': 'off',
+      'single-export/single-export': 'off',
+      'import/order': 'off',
+    },
+  },
 ]

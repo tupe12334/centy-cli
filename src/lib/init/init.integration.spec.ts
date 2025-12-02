@@ -9,6 +9,19 @@ vi.mock('node:fs/promises', async () => {
   return memfs.fs.promises
 })
 
+// Mock daemon client to force local fallback
+vi.mock('../../daemon/daemon-get-reconciliation-plan.js', () => ({
+  daemonGetReconciliationPlan: vi
+    .fn()
+    .mockRejectedValue(new Error('ECONNREFUSED')),
+}))
+
+vi.mock('../../daemon/daemon-execute-reconciliation.js', () => ({
+  daemonExecuteReconciliation: vi
+    .fn()
+    .mockRejectedValue(new Error('ECONNREFUSED')),
+}))
+
 // Import after mocking
 const { init } = await import('./init.js')
 

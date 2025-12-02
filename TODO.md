@@ -1,4 +1,4 @@
-TODO:
+# TODO:
 
 - [ ] command that open the container with the project
 - [ ] command that create new issue folder

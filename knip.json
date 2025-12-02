@@ -3,7 +3,7 @@
   "entry": ["src/index.ts", "src/commands/**/*.ts", "bin/*.js"],
   "project": ["src/**/*.ts"],
   "ignore": ["**/*.spec.ts", "**/*.test.ts", "dist/**", "coverage/**"],
-  "ignoreDependencies": ["tsx"],
+  "ignoreDependencies": ["tsx", "@cspell/dict-he"],
   "ignoreExportsUsedInFile": true,
   "ignoreWorkspaces": []
 }

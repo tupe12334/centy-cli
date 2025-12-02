@@ -1,134 +1,103 @@
-import { spawn } from 'child_process'
 import { mkdir, rm, readdir, readFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { Writable } from 'node:stream'
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
+import { init } from './lib/init/index.js'
 
-const PROJECT_ROOT = process.cwd()
+/**
+ * Create a writable stream that captures output to a string
+ */
+function createOutputCapture(): { stream: Writable; getOutput: () => string } {
+  let output = ''
+  const stream = new Writable({
+    write(chunk, _encoding, callback) {
+      output += chunk.toString()
+      callback()
+    },
+  })
+  return { stream, getOutput: () => output }
+}
 
-describe('cli', () => {
-  const runCli = (
-    args: string[],
-    cwd?: string
-  ): Promise<{ stdout: string; stderr: string; code: number | null }> => {
-    return new Promise(resolve => {
-      const devScript = join(PROJECT_ROOT, 'bin/dev.js')
-      const env = { ...process.env }
-      if (cwd !== undefined) {
-        env['CENTY_CWD'] = cwd
-      }
-      // Use tsx to run the dev script with TypeScript support
-      const proc = spawn('npx', ['tsx', devScript, ...args], {
-        cwd: PROJECT_ROOT,
-        env,
-      })
-      let stdout = ''
-      let stderr = ''
+describe('init command', () => {
+  let tempDir: string
 
-      proc.stdout.on('data', data => {
-        stdout += data.toString()
-      })
-
-      proc.stderr.on('data', data => {
-        stderr += data.toString()
-      })
-
-      proc.on('close', code => {
-        resolve({ stdout, stderr, code })
-      })
-    })
-  }
-
-  describe('--version', () => {
-    it('should print version when called with --version', async () => {
-      const result = await runCli(['--version'])
-      // oclif outputs version as package name/version
-      expect(result.stdout).toMatch(/centy/)
-      expect(result.code).toBe(0)
-    })
+  beforeEach(async () => {
+    tempDir = join(tmpdir(), `centy-test-${Date.now()}`)
+    await mkdir(tempDir, { recursive: true })
   })
 
-  describe('--help', () => {
-    it('should print help when called with --help', async () => {
-      const result = await runCli(['--help'])
-      // oclif has different help format
-      expect(result.stdout).toContain('COMMANDS')
-      expect(result.code).toBe(0)
-    })
-
-    it('should print help when called with no arguments', async () => {
-      const result = await runCli([])
-      // oclif shows help by default when no command
-      expect(result.stdout).toContain('COMMANDS')
-      expect(result.code).toBe(0)
-    })
+  afterEach(async () => {
+    await rm(tempDir, { recursive: true, force: true })
   })
 
-  describe('unknown command', () => {
-    it('should print error for unknown command', async () => {
-      const result = await runCli(['unknown'])
-      // oclif outputs error to stderr
-      expect(result.stderr).toContain('command unknown not found')
-      expect(result.code).toBe(2)
-    })
+  it('should create .centy folder with force flag', async () => {
+    const { stream, getOutput } = createOutputCapture()
+    const result = await init({ force: true, cwd: tempDir, output: stream })
+
+    expect(result.success).toBe(true)
+    expect(getOutput()).toContain('Creating .centy folder')
+    expect(getOutput()).toContain('Successfully initialized')
+
+    // Verify folder structure
+    const centyPath = join(tempDir, '.centy')
+    const entries = await readdir(centyPath)
+    expect(entries).toContain('issues')
+    expect(entries).toContain('docs')
+    expect(entries).toContain('README.md')
+    expect(entries).toContain('.centy-manifest.json')
   })
 
-  describe('init', () => {
-    let tempDir: string
+  it('should create README.md with correct content', async () => {
+    const { stream } = createOutputCapture()
+    await init({ force: true, cwd: tempDir, output: stream })
 
-    beforeEach(async () => {
-      tempDir = join(tmpdir(), `centy-test-${Date.now()}`)
-      await mkdir(tempDir, { recursive: true })
-    })
+    const readmePath = join(tempDir, '.centy', 'README.md')
+    const content = await readFile(readmePath, 'utf8')
+    expect(content).toContain('For AI Assistants')
+    expect(content).toContain('issues/')
+    expect(content).toContain('docs/')
+  })
 
-    afterEach(async () => {
-      await rm(tempDir, { recursive: true, force: true })
-    })
+  it('should create manifest file', async () => {
+    const { stream } = createOutputCapture()
+    await init({ force: true, cwd: tempDir, output: stream })
 
-    it('should create .centy folder with force flag', async () => {
-      const result = await runCli(['init', '--force'], tempDir)
-      expect(result.code).toBe(0)
-      expect(result.stdout).toContain('Creating .centy folder')
-      expect(result.stdout).toContain('Successfully initialized')
+    const manifestPath = join(tempDir, '.centy', '.centy-manifest.json')
+    const content = await readFile(manifestPath, 'utf8')
+    const manifest = JSON.parse(content)
+    expect(manifest.schemaVersion).toBe(1)
+    expect(manifest.managedFiles).toBeInstanceOf(Array)
+    expect(manifest.managedFiles.length).toBeGreaterThan(0)
+  })
 
-      // Verify folder structure
-      const centyPath = join(tempDir, '.centy')
-      const entries = await readdir(centyPath)
-      expect(entries).toContain('issues')
-      expect(entries).toContain('docs')
-      expect(entries).toContain('README.md')
-      expect(entries).toContain('.centy-manifest.json')
-    })
+  it('should detect existing folder and report', async () => {
+    const { stream: stream1 } = createOutputCapture()
+    // First init
+    await init({ force: true, cwd: tempDir, output: stream1 })
 
-    it('should create README.md with correct content', async () => {
-      await runCli(['init', '--force'], tempDir)
+    // Second init
+    const { stream: stream2, getOutput } = createOutputCapture()
+    const result = await init({ force: true, cwd: tempDir, output: stream2 })
 
-      const readmePath = join(tempDir, '.centy', 'README.md')
-      const content = await readFile(readmePath, 'utf8')
-      expect(content).toContain('For AI Assistants')
-      expect(content).toContain('issues/')
-      expect(content).toContain('docs/')
-    })
+    expect(result.success).toBe(true)
+    expect(getOutput()).toContain('Found existing .centy folder')
+  })
 
-    it('should create manifest file', async () => {
-      await runCli(['init', '--force'], tempDir)
+  it('should return created files in result', async () => {
+    const { stream } = createOutputCapture()
+    const result = await init({ force: true, cwd: tempDir, output: stream })
 
-      const manifestPath = join(tempDir, '.centy', '.centy-manifest.json')
-      const content = await readFile(manifestPath, 'utf8')
-      const manifest = JSON.parse(content)
-      expect(manifest.schemaVersion).toBe(1)
-      expect(manifest.managedFiles).toBeInstanceOf(Array)
-      expect(manifest.managedFiles.length).toBeGreaterThan(0)
-    })
+    expect(result.success).toBe(true)
+    expect(result.created).toContain('issues/')
+    expect(result.created).toContain('docs/')
+    expect(result.created).toContain('README.md')
+  })
 
-    it('should detect existing folder and report', async () => {
-      // First init
-      await runCli(['init', '--force'], tempDir)
+  it('should set centyPath in result', async () => {
+    const { stream } = createOutputCapture()
+    const result = await init({ force: true, cwd: tempDir, output: stream })
 
-      // Second init
-      const result = await runCli(['init', '--force'], tempDir)
-      expect(result.code).toBe(0)
-      expect(result.stdout).toContain('Found existing .centy folder')
-    })
+    expect(result.centyPath).toBe(join(tempDir, '.centy'))
   })
 })

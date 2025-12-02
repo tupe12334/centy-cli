@@ -21,6 +21,9 @@ importers:
       '@commitlint/config-conventional':
         specifier: ^20.0.0
         version: 20.0.0
+      '@cspell/dict-he':
+        specifier: ^4.0.5
+        version: 4.0.5
       '@types/node':
         specifier: ^24.10.1
         version: 24.10.1
@@ -443,6 +446,9 @@ packages:
 
   '@cspell/dict-haskell@4.0.6':
     resolution: {integrity: sha512-ib8SA5qgftExpYNjWhpYIgvDsZ/0wvKKxSP+kuSkkak520iPvTJumEpIE+qPcmJQo4NzdKMN8nEfaeci4OcFAQ==}
+
+  '@cspell/dict-he@4.0.5':
+    resolution: {integrity: sha512-kio364XZ+f/tNGBxT1Puc1VpO9o5u6J+07GVhFE+Z/smod6de5scXTLL11dVbo/ah2i9w6Qcc3J+g2P0H+Ft6Q==}
 
   '@cspell/dict-html-symbol-entities@4.0.4':
     resolution: {integrity: sha512-afea+0rGPDeOV9gdO06UW183Qg6wRhWVkgCFwiO3bDupAoyXRuvupbb5nUyqSTsLXIKL8u8uXQlJ9pkz07oVXw==}
@@ -5355,6 +5361,8 @@ snapshots:
   '@cspell/dict-google@1.0.9': {}
 
   '@cspell/dict-haskell@4.0.6': {}
+
+  '@cspell/dict-he@4.0.5': {}
 
   '@cspell/dict-html-symbol-entities@4.0.4': {}
 

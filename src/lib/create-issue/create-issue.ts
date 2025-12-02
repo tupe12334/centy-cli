@@ -1,84 +1,101 @@
 import { join } from 'node:path'
+import { daemonCreateIssue } from '../../daemon/daemon-create-issue.js'
+import { daemonIsInitialized } from '../../daemon/daemon-is-initialized.js'
 import type { CreateIssueOptions } from '../../types/create-issue-options.js'
 import type { CreateIssueResult } from '../../types/create-issue-result.js'
-import { readManifest } from '../../utils/read-manifest.js'
-import { writeManifest } from '../../utils/write-manifest.js'
 import { gatherIssueInput } from './gather-issue-input.js'
-import { getConfigDefaults } from './get-config-defaults.js'
-import { getNextIssueNumber } from './get-next-issue-number.js'
-import { readConfig } from './read-config.js'
-import { writeIssueFiles } from './write-issue-files.js'
 
 const CENTY_FOLDER = '.centy'
 const ISSUES_FOLDER = 'issues'
 
+function buildIssuePaths(
+  cwd: string,
+  issueNumber: string
+): { issueFolderPath: string; issueMdPath: string; metadataPath: string } {
+  const centyPath = join(cwd, CENTY_FOLDER)
+  const issuesPath = join(centyPath, ISSUES_FOLDER)
+  const issueFolderPath = join(issuesPath, issueNumber)
+  return {
+    issueFolderPath,
+    issueMdPath: join(issueFolderPath, 'issue.md'),
+    metadataPath: join(issueFolderPath, 'metadata.json'),
+  }
+}
+
+function handleDaemonError(error: unknown): CreateIssueResult {
+  const msg = error instanceof Error ? error.message : String(error)
+  if (msg.includes('UNAVAILABLE') || msg.includes('ECONNREFUSED')) {
+    return {
+      success: false,
+      error: 'Centy daemon is not running. Please start the daemon first.',
+    }
+  }
+  return { success: false, error: msg }
+}
+
+function convertCustomFields(
+  fields: Record<string, unknown> | undefined
+): Record<string, string> {
+  const result: Record<string, string> = {}
+  if (fields !== undefined) {
+    for (const [key, value] of Object.entries(fields)) {
+      result[key] = String(value)
+    }
+  }
+  return result
+}
+
 /**
  * Create a new issue in the .centy/issues folder
+ * Requires daemon to be running
  */
 export async function createIssue(
   options?: CreateIssueOptions
 ): Promise<CreateIssueResult> {
-  const opts = options !== undefined ? options : {}
-  const cwd = opts.cwd !== undefined ? opts.cwd : process.cwd()
-  const centyPath = join(cwd, CENTY_FOLDER)
-  const issuesPath = join(centyPath, ISSUES_FOLDER)
-  const output = opts.output !== undefined ? opts.output : process.stdout
+  const opts = options ?? {}
+  const cwd = opts.cwd ?? process.cwd()
+  const output = opts.output ?? process.stdout
 
-  // Check .centy folder exists
-  const manifest = await readManifest(centyPath)
-  if (manifest === null) {
-    return {
-      success: false,
-      error: '.centy folder not initialized. Run "centy init" first.',
+  try {
+    const initStatus = await daemonIsInitialized({ projectPath: cwd })
+    if (!initStatus.initialized) {
+      return {
+        success: false,
+        error: '.centy folder not initialized. Run "centy init" first.',
+      }
     }
-  }
 
-  // Read config and get defaults
-  const config = await readConfig(centyPath)
-  const configDefaults = getConfigDefaults(config)
-
-  // Gather input (title and description)
-  const input = await gatherIssueInput(opts, output)
-  if (input.title === null) {
-    return {
-      success: false,
-      error: 'Issue title is required',
+    const input = await gatherIssueInput(opts, output)
+    if (input.title === null) {
+      return { success: false, error: 'Issue title is required' }
     }
-  }
 
-  // Get next issue number
-  const issueNumber = await getNextIssueNumber(issuesPath)
+    const response = await daemonCreateIssue({
+      projectPath: cwd,
+      title: input.title,
+      description: input.description,
+      priority: opts.priority ?? 'medium',
+      status: opts.status ?? 'open',
+      customFields: convertCustomFields(opts.customFields),
+    })
 
-  // Determine status and priority
-  const status =
-    opts.status !== undefined ? opts.status : configDefaults.defaultStatus
-  const priority =
-    opts.priority !== undefined ? opts.priority : configDefaults.defaultPriority
+    if (!response.success) {
+      return { success: false, error: response.error }
+    }
 
-  // Write issue files and update manifest
-  const result = await writeIssueFiles({
-    issuesPath,
-    issueNumber,
-    title: input.title,
-    description: input.description,
-    status,
-    priority,
-    customFields: opts.customFields,
-    configCustomFields: configDefaults.customFields,
-    manifest,
-  })
+    const paths = buildIssuePaths(cwd, response.issueNumber)
+    output.write(`\nCreated issue #${response.issueNumber}\n`)
+    output.write(`  ${paths.issueMdPath}\n`)
+    output.write(`  ${paths.metadataPath}\n`)
 
-  await writeManifest(centyPath, result.updatedManifest)
-
-  output.write(`\nCreated issue #${issueNumber}\n`)
-  output.write(`  ${result.issueMdPath}\n`)
-  output.write(`  ${result.metadataPath}\n`)
-
-  return {
-    success: true,
-    issueNumber,
-    issuePath: result.issueFolderPath,
-    issueMarkdownPath: result.issueMdPath,
-    metadataPath: result.metadataPath,
+    return {
+      success: true,
+      issueNumber: response.issueNumber,
+      issuePath: paths.issueFolderPath,
+      issueMarkdownPath: paths.issueMdPath,
+      metadataPath: paths.metadataPath,
+    }
+  } catch (error) {
+    return handleDaemonError(error)
   }
 }

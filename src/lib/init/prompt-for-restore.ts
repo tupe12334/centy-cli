@@ -1,6 +1,10 @@
 import type { Interface } from 'node:readline'
-import type { FileToRestore } from '../../types/file-to-restore.js'
 import { askYesNoAllNone } from '../../utils/ask-yes-no-all-none.js'
+
+interface FileToRestore {
+  path: string
+  wasInManifest: boolean
+}
 
 interface RestoreDecision {
   restore: string[]

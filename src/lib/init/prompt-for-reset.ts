@@ -1,6 +1,11 @@
 import type { Interface } from 'node:readline'
-import type { FileToReset } from '../../types/file-to-reset.js'
 import { askYesNoAllNone } from '../../utils/ask-yes-no-all-none.js'
+
+interface FileToReset {
+  path: string
+  currentHash: string
+  originalHash: string
+}
 
 interface ResetDecision {
   reset: string[]

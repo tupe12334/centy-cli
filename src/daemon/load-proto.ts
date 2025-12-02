@@ -11,6 +11,12 @@ import type {
   ExecuteReconciliationRequest,
   IsInitializedRequest,
   IsInitializedResponse,
+  CreateIssueRequest,
+  CreateIssueResponse,
+  GetManifestRequest,
+  Manifest,
+  GetConfigRequest,
+  Config,
 } from './types.js'
 
 const currentDir = dirname(fileURLToPath(import.meta.url))
@@ -37,6 +43,21 @@ interface CentyDaemonClient {
       error: ServiceError | null,
       response: IsInitializedResponse
     ) => void
+  ): void
+  createIssue(
+    request: CreateIssueRequest,
+    callback: (
+      error: ServiceError | null,
+      response: CreateIssueResponse
+    ) => void
+  ): void
+  getManifest(
+    request: GetManifestRequest,
+    callback: (error: ServiceError | null, response: Manifest) => void
+  ): void
+  getConfig(
+    request: GetConfigRequest,
+    callback: (error: ServiceError | null, response: Config) => void
   ): void
 }
 

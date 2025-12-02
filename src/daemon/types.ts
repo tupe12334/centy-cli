@@ -72,3 +72,55 @@ export interface IsInitializedResponse {
   initialized: boolean
   centyPath: string
 }
+
+// ============ Issue Types ============
+
+export interface CreateIssueRequest {
+  projectPath: string
+  title: string
+  description: string
+  priority: string
+  status: string
+  customFields: Record<string, string>
+}
+
+export interface CreateIssueResponse {
+  success: boolean
+  error: string
+  issueNumber: string
+  createdFiles: string[]
+  manifest?: Manifest
+}
+
+export interface GetNextIssueNumberRequest {
+  projectPath: string
+}
+
+export interface GetNextIssueNumberResponse {
+  issueNumber: string
+}
+
+// ============ Manifest Types ============
+
+export interface GetManifestRequest {
+  projectPath: string
+}
+
+// ============ Config Types ============
+
+export interface GetConfigRequest {
+  projectPath: string
+}
+
+export interface Config {
+  customFields: CustomFieldDefinition[]
+  defaults: Record<string, string>
+}
+
+export interface CustomFieldDefinition {
+  name: string
+  fieldType: string
+  required: boolean
+  defaultValue: string
+  enumValues: string[]
+}

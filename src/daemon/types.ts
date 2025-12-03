@@ -54,15 +54,6 @@ export interface Manifest {
   centyVersion: string
   createdAt: string
   updatedAt: string
-  managedFiles: ManagedFile[]
-}
-
-export interface ManagedFile {
-  path: string
-  hash: string
-  version: string
-  createdAt: string
-  fileType: 'FILE_TYPE_UNSPECIFIED' | 'FILE_TYPE_FILE' | 'FILE_TYPE_DIRECTORY'
 }
 
 export interface IsInitializedRequest {

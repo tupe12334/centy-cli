@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { loadPackageDefinition, credentials } from '@grpc/grpc-js'
 import { loadSync } from '@grpc/proto-loader'
 import { dirname, join } from 'node:path'
@@ -17,6 +18,48 @@ import type {
   Manifest,
   GetConfigRequest,
   Config,
+  GetIssueRequest,
+  GetIssueByDisplayNumberRequest,
+  Issue,
+  ListIssuesRequest,
+  ListIssuesResponse,
+  UpdateIssueRequest,
+  UpdateIssueResponse,
+  DeleteIssueRequest,
+  DeleteIssueResponse,
+  CreateDocRequest,
+  CreateDocResponse,
+  GetDocRequest,
+  Doc,
+  ListDocsRequest,
+  ListDocsResponse,
+  UpdateDocRequest,
+  UpdateDocResponse,
+  DeleteDocRequest,
+  DeleteDocResponse,
+  AddAssetRequest,
+  AddAssetResponse,
+  ListAssetsRequest,
+  ListAssetsResponse,
+  GetAssetRequest,
+  GetAssetResponse,
+  DeleteAssetRequest,
+  DeleteAssetResponse,
+  ListSharedAssetsRequest,
+  ListProjectsRequest,
+  ListProjectsResponse,
+  RegisterProjectRequest,
+  RegisterProjectResponse,
+  UntrackProjectRequest,
+  UntrackProjectResponse,
+  GetProjectInfoRequest,
+  GetProjectInfoResponse,
+  GetDaemonInfoRequest,
+  DaemonInfo,
+  GetProjectVersionRequest,
+  ProjectVersionInfo,
+  UpdateVersionRequest,
+  UpdateVersionResponse,
 } from './types.js'
 
 const currentDir = dirname(fileURLToPath(import.meta.url))
@@ -25,6 +68,7 @@ const PROTO_PATH = join(currentDir, '../../proto/centy.proto')
 const DEFAULT_DAEMON_ADDRESS = '127.0.0.1:50051'
 
 interface CentyDaemonClient {
+  // Init operations
   init(
     request: InitRequest,
     callback: (error: ServiceError | null, response: InitResponse) => void
@@ -44,6 +88,8 @@ interface CentyDaemonClient {
       response: IsInitializedResponse
     ) => void
   ): void
+
+  // Issue operations
   createIssue(
     request: CreateIssueRequest,
     callback: (
@@ -51,6 +97,34 @@ interface CentyDaemonClient {
       response: CreateIssueResponse
     ) => void
   ): void
+  getIssue(
+    request: GetIssueRequest,
+    callback: (error: ServiceError | null, response: Issue) => void
+  ): void
+  getIssueByDisplayNumber(
+    request: GetIssueByDisplayNumberRequest,
+    callback: (error: ServiceError | null, response: Issue) => void
+  ): void
+  listIssues(
+    request: ListIssuesRequest,
+    callback: (error: ServiceError | null, response: ListIssuesResponse) => void
+  ): void
+  updateIssue(
+    request: UpdateIssueRequest,
+    callback: (
+      error: ServiceError | null,
+      response: UpdateIssueResponse
+    ) => void
+  ): void
+  deleteIssue(
+    request: DeleteIssueRequest,
+    callback: (
+      error: ServiceError | null,
+      response: DeleteIssueResponse
+    ) => void
+  ): void
+
+  // Manifest and Config
   getManifest(
     request: GetManifestRequest,
     callback: (error: ServiceError | null, response: Manifest) => void
@@ -58,6 +132,100 @@ interface CentyDaemonClient {
   getConfig(
     request: GetConfigRequest,
     callback: (error: ServiceError | null, response: Config) => void
+  ): void
+
+  // Doc operations
+  createDoc(
+    request: CreateDocRequest,
+    callback: (error: ServiceError | null, response: CreateDocResponse) => void
+  ): void
+  getDoc(
+    request: GetDocRequest,
+    callback: (error: ServiceError | null, response: Doc) => void
+  ): void
+  listDocs(
+    request: ListDocsRequest,
+    callback: (error: ServiceError | null, response: ListDocsResponse) => void
+  ): void
+  updateDoc(
+    request: UpdateDocRequest,
+    callback: (error: ServiceError | null, response: UpdateDocResponse) => void
+  ): void
+  deleteDoc(
+    request: DeleteDocRequest,
+    callback: (error: ServiceError | null, response: DeleteDocResponse) => void
+  ): void
+
+  // Asset operations
+  addAsset(
+    request: AddAssetRequest,
+    callback: (error: ServiceError | null, response: AddAssetResponse) => void
+  ): void
+  listAssets(
+    request: ListAssetsRequest,
+    callback: (error: ServiceError | null, response: ListAssetsResponse) => void
+  ): void
+  getAsset(
+    request: GetAssetRequest,
+    callback: (error: ServiceError | null, response: GetAssetResponse) => void
+  ): void
+  deleteAsset(
+    request: DeleteAssetRequest,
+    callback: (
+      error: ServiceError | null,
+      response: DeleteAssetResponse
+    ) => void
+  ): void
+  listSharedAssets(
+    request: ListSharedAssetsRequest,
+    callback: (error: ServiceError | null, response: ListAssetsResponse) => void
+  ): void
+
+  // Project registry operations
+  listProjects(
+    request: ListProjectsRequest,
+    callback: (
+      error: ServiceError | null,
+      response: ListProjectsResponse
+    ) => void
+  ): void
+  registerProject(
+    request: RegisterProjectRequest,
+    callback: (
+      error: ServiceError | null,
+      response: RegisterProjectResponse
+    ) => void
+  ): void
+  untrackProject(
+    request: UntrackProjectRequest,
+    callback: (
+      error: ServiceError | null,
+      response: UntrackProjectResponse
+    ) => void
+  ): void
+  getProjectInfo(
+    request: GetProjectInfoRequest,
+    callback: (
+      error: ServiceError | null,
+      response: GetProjectInfoResponse
+    ) => void
+  ): void
+
+  // Version operations
+  getDaemonInfo(
+    request: GetDaemonInfoRequest,
+    callback: (error: ServiceError | null, response: DaemonInfo) => void
+  ): void
+  getProjectVersion(
+    request: GetProjectVersionRequest,
+    callback: (error: ServiceError | null, response: ProjectVersionInfo) => void
+  ): void
+  updateVersion(
+    request: UpdateVersionRequest,
+    callback: (
+      error: ServiceError | null,
+      response: UpdateVersionResponse
+    ) => void
   ): void
 }
 

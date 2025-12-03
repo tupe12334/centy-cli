@@ -1,6 +1,6 @@
 {
   "name": "centy",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "CLI for managing project issues and docs via code in the .centy folder",
   "type": "module",
   "main": "./dist/index.js",
@@ -62,6 +62,9 @@
     "commands": {
       "strategy": "pattern",
       "target": "./dist/commands"
+    },
+    "hooks": {
+      "prerun": "./dist/hooks/prerun.js"
     },
     "plugins": [
       "@oclif/plugin-help"

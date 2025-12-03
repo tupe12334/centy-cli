@@ -42,42 +42,32 @@ export default class GetAsset extends Command {
     const { args, flags } = await this.parse(GetAsset)
     const cwd = process.env['CENTY_CWD'] ?? process.cwd()
 
-    try {
-      const initStatus = await daemonIsInitialized({ projectPath: cwd })
-      if (!initStatus.initialized) {
-        this.error('.centy folder not initialized. Run "centy init" first.')
-      }
-
-      if (!flags.issue && !flags.shared) {
-        this.error('Either --issue or --shared must be specified.')
-      }
-
-      const response = await daemonGetAsset({
-        projectPath: cwd,
-        issueId: flags.issue,
-        filename: args.filename,
-        isShared: flags.shared,
-      })
-
-      if (!response.success) {
-        this.error(response.error)
-      }
-
-      const outputPath = flags.output ?? args.filename
-      // eslint-disable-next-line security/detect-non-literal-fs-filename
-      await writeFile(outputPath, response.data)
-
-      this.log(`Saved asset to ${outputPath}`)
-      this.log(`  Size: ${response.asset.size} bytes`)
-      this.log(`  Type: ${response.asset.mimeType}`)
-    } catch (error) {
-      const msg = error instanceof Error ? error.message : String(error)
-      if (msg.includes('UNAVAILABLE') || msg.includes('ECONNREFUSED')) {
-        this.error(
-          'Centy daemon is not running. Please start the daemon first.'
-        )
-      }
-      this.error(msg)
+    const initStatus = await daemonIsInitialized({ projectPath: cwd })
+    if (!initStatus.initialized) {
+      this.error('.centy folder not initialized. Run "centy init" first.')
     }
+
+    if (!flags.issue && !flags.shared) {
+      this.error('Either --issue or --shared must be specified.')
+    }
+
+    const response = await daemonGetAsset({
+      projectPath: cwd,
+      issueId: flags.issue,
+      filename: args.filename,
+      isShared: flags.shared,
+    })
+
+    if (!response.success) {
+      this.error(response.error)
+    }
+
+    const outputPath = flags.output ?? args.filename
+    // eslint-disable-next-line security/detect-non-literal-fs-filename
+    await writeFile(outputPath, response.data)
+
+    this.log(`Saved asset to ${outputPath}`)
+    this.log(`  Size: ${response.asset.size} bytes`)
+    this.log(`  Type: ${response.asset.mimeType}`)
   }
 }

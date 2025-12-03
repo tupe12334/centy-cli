@@ -1,6 +1,5 @@
 import { Command, Flags } from '@oclif/core'
 
-import { checkDaemonConnection } from '../../daemon/check-daemon-connection.js'
 import { createIssue } from '../../lib/create-issue/index.js'
 
 /**
@@ -38,15 +37,6 @@ export default class CreateIssue extends Command {
 
   public async run(): Promise<void> {
     const { flags } = await this.parse(CreateIssue)
-
-    // Check daemon connection first
-    const connectionStatus = await checkDaemonConnection()
-    if (!connectionStatus.connected) {
-      this.error(
-        connectionStatus.error ??
-          'Centy daemon is not running. Please start the daemon first.'
-      )
-    }
 
     // Allow CENTY_CWD env var to override working directory (for testing)
     const cwd = process.env['CENTY_CWD']

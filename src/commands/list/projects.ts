@@ -28,38 +28,28 @@ export default class ListProjects extends Command {
   public async run(): Promise<void> {
     const { flags } = await this.parse(ListProjects)
 
-    try {
-      const response = await daemonListProjects({
-        includeStale: flags['include-stale'],
-      })
+    const response = await daemonListProjects({
+      includeStale: flags['include-stale'],
+    })
 
-      if (flags.json) {
-        this.log(JSON.stringify(response.projects, null, 2))
-        return
-      }
+    if (flags.json) {
+      this.log(JSON.stringify(response.projects, null, 2))
+      return
+    }
 
-      if (response.projects.length === 0) {
-        this.log('No tracked projects found.')
-        return
-      }
+    if (response.projects.length === 0) {
+      this.log('No tracked projects found.')
+      return
+    }
 
-      this.log(`Found ${response.totalCount} project(s):\n`)
-      for (const project of response.projects) {
-        const status = project.initialized ? '✓' : '✗'
-        this.log(`${status} ${project.name}`)
-        this.log(`    Path: ${project.path}`)
-        this.log(`    Issues: ${project.issueCount}, Docs: ${project.docCount}`)
-        this.log(`    Last accessed: ${project.lastAccessed}`)
-        this.log('')
-      }
-    } catch (error) {
-      const msg = error instanceof Error ? error.message : String(error)
-      if (msg.includes('UNAVAILABLE') || msg.includes('ECONNREFUSED')) {
-        this.error(
-          'Centy daemon is not running. Please start the daemon first.'
-        )
-      }
-      this.error(msg)
+    this.log(`Found ${response.totalCount} project(s):\n`)
+    for (const project of response.projects) {
+      const status = project.initialized ? '✓' : '✗'
+      this.log(`${status} ${project.name}`)
+      this.log(`    Path: ${project.path}`)
+      this.log(`    Issues: ${project.issueCount}, Docs: ${project.docCount}`)
+      this.log(`    Last accessed: ${project.lastAccessed}`)
+      this.log('')
     }
   }
 }

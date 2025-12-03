@@ -1,7 +1,7 @@
 import { Command, Flags } from '@oclif/core'
 
-import { daemonListDocs } from '../../daemon/daemon-list-docs.js'
 import { daemonIsInitialized } from '../../daemon/daemon-is-initialized.js'
+import { daemonListDocs } from '../../daemon/daemon-list-docs.js'
 
 /**
  * List all documentation files
@@ -25,38 +25,28 @@ export default class ListDocs extends Command {
     const { flags } = await this.parse(ListDocs)
     const cwd = process.env['CENTY_CWD'] ?? process.cwd()
 
-    try {
-      const initStatus = await daemonIsInitialized({ projectPath: cwd })
-      if (!initStatus.initialized) {
-        this.error('.centy folder not initialized. Run "centy init" first.')
-      }
+    const initStatus = await daemonIsInitialized({ projectPath: cwd })
+    if (!initStatus.initialized) {
+      this.error('.centy folder not initialized. Run "centy init" first.')
+    }
 
-      const response = await daemonListDocs({
-        projectPath: cwd,
-      })
+    const response = await daemonListDocs({
+      projectPath: cwd,
+    })
 
-      if (flags.json) {
-        this.log(JSON.stringify(response.docs, null, 2))
-        return
-      }
+    if (flags.json) {
+      this.log(JSON.stringify(response.docs, null, 2))
+      return
+    }
 
-      if (response.docs.length === 0) {
-        this.log('No docs found.')
-        return
-      }
+    if (response.docs.length === 0) {
+      this.log('No docs found.')
+      return
+    }
 
-      this.log(`Found ${response.totalCount} doc(s):\n`)
-      for (const doc of response.docs) {
-        this.log(`${doc.slug}: ${doc.title}`)
-      }
-    } catch (error) {
-      const msg = error instanceof Error ? error.message : String(error)
-      if (msg.includes('UNAVAILABLE') || msg.includes('ECONNREFUSED')) {
-        this.error(
-          'Centy daemon is not running. Please start the daemon first.'
-        )
-      }
-      this.error(msg)
+    this.log(`Found ${response.totalCount} doc(s):\n`)
+    for (const doc of response.docs) {
+      this.log(`${doc.slug}: ${doc.title}`)
     }
   }
 }

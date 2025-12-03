@@ -24,26 +24,16 @@ export default class RegisterProject extends Command {
     const { args } = await this.parse(RegisterProject)
     const projectPath = args.path ?? process.env['CENTY_CWD'] ?? process.cwd()
 
-    try {
-      const response = await daemonRegisterProject({
-        projectPath,
-      })
+    const response = await daemonRegisterProject({
+      projectPath,
+    })
 
-      if (!response.success) {
-        this.error(response.error)
-      }
-
-      this.log(`Registered project "${response.project.name}"`)
-      this.log(`  Path: ${response.project.path}`)
-      this.log(`  Initialized: ${response.project.initialized ? 'yes' : 'no'}`)
-    } catch (error) {
-      const msg = error instanceof Error ? error.message : String(error)
-      if (msg.includes('UNAVAILABLE') || msg.includes('ECONNREFUSED')) {
-        this.error(
-          'Centy daemon is not running. Please start the daemon first.'
-        )
-      }
-      this.error(msg)
+    if (!response.success) {
+      this.error(response.error)
     }
+
+    this.log(`Registered project "${response.project.name}"`)
+    this.log(`  Path: ${response.project.path}`)
+    this.log(`  Initialized: ${response.project.initialized ? 'yes' : 'no'}`)
   }
 }

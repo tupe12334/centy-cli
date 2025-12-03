@@ -32,36 +32,26 @@ export default class GetProject extends Command {
     const { args, flags } = await this.parse(GetProject)
     const projectPath = args.path ?? process.env['CENTY_CWD'] ?? process.cwd()
 
-    try {
-      const response = await daemonGetProjectInfo({
-        projectPath,
-      })
+    const response = await daemonGetProjectInfo({
+      projectPath,
+    })
 
-      if (!response.found) {
-        this.error(`Project not found at "${projectPath}"`)
-      }
-
-      if (flags.json) {
-        this.log(JSON.stringify(response.project, null, 2))
-        return
-      }
-
-      const project = response.project
-      this.log(`Project: ${project.name}`)
-      this.log(`  Path: ${project.path}`)
-      this.log(`  Initialized: ${project.initialized ? 'yes' : 'no'}`)
-      this.log(`  Issues: ${project.issueCount}`)
-      this.log(`  Docs: ${project.docCount}`)
-      this.log(`  First accessed: ${project.firstAccessed}`)
-      this.log(`  Last accessed: ${project.lastAccessed}`)
-    } catch (error) {
-      const msg = error instanceof Error ? error.message : String(error)
-      if (msg.includes('UNAVAILABLE') || msg.includes('ECONNREFUSED')) {
-        this.error(
-          'Centy daemon is not running. Please start the daemon first.'
-        )
-      }
-      this.error(msg)
+    if (!response.found) {
+      this.error(`Project not found at "${projectPath}"`)
     }
+
+    if (flags.json) {
+      this.log(JSON.stringify(response.project, null, 2))
+      return
+    }
+
+    const project = response.project
+    this.log(`Project: ${project.name}`)
+    this.log(`  Path: ${project.path}`)
+    this.log(`  Initialized: ${project.initialized ? 'yes' : 'no'}`)
+    this.log(`  Issues: ${project.issueCount}`)
+    this.log(`  Docs: ${project.docCount}`)
+    this.log(`  First accessed: ${project.firstAccessed}`)
+    this.log(`  Last accessed: ${project.lastAccessed}`)
   }
 }

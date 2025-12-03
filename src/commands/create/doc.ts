@@ -38,35 +38,25 @@ export default class CreateDoc extends Command {
     const { flags } = await this.parse(CreateDoc)
     const cwd = process.env['CENTY_CWD'] ?? process.cwd()
 
-    try {
-      const initStatus = await daemonIsInitialized({ projectPath: cwd })
-      if (!initStatus.initialized) {
-        this.error('.centy folder not initialized. Run "centy init" first.')
-      }
-
-      const response = await daemonCreateDoc({
-        projectPath: cwd,
-        title: flags.title,
-        content: flags.content,
-        slug: flags.slug,
-        template: flags.template,
-      })
-
-      if (!response.success) {
-        this.error(response.error)
-      }
-
-      this.log(`Created doc "${flags.title}"`)
-      this.log(`  Slug: ${response.slug}`)
-      this.log(`  File: ${response.createdFile}`)
-    } catch (error) {
-      const msg = error instanceof Error ? error.message : String(error)
-      if (msg.includes('UNAVAILABLE') || msg.includes('ECONNREFUSED')) {
-        this.error(
-          'Centy daemon is not running. Please start the daemon first.'
-        )
-      }
-      this.error(msg)
+    const initStatus = await daemonIsInitialized({ projectPath: cwd })
+    if (!initStatus.initialized) {
+      this.error('.centy folder not initialized. Run "centy init" first.')
     }
+
+    const response = await daemonCreateDoc({
+      projectPath: cwd,
+      title: flags.title,
+      content: flags.content,
+      slug: flags.slug,
+      template: flags.template,
+    })
+
+    if (!response.success) {
+      this.error(response.error)
+    }
+
+    this.log(`Created doc "${flags.title}"`)
+    this.log(`  Slug: ${response.slug}`)
+    this.log(`  File: ${response.createdFile}`)
   }
 }

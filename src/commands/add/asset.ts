@@ -44,47 +44,44 @@ export default class AddAsset extends Command {
     const { args, flags } = await this.parse(AddAsset)
     const cwd = process.env['CENTY_CWD'] ?? process.cwd()
 
+    const initStatus = await daemonIsInitialized({ projectPath: cwd })
+    if (!initStatus.initialized) {
+      this.error('.centy folder not initialized. Run "centy init" first.')
+    }
+
+    if (!flags.issue && !flags.shared) {
+      this.error('Either --issue or --shared must be specified.')
+    }
+
+    let fileData: Buffer
     try {
-      const initStatus = await daemonIsInitialized({ projectPath: cwd })
-      if (!initStatus.initialized) {
-        this.error('.centy folder not initialized. Run "centy init" first.')
-      }
-
-      if (!flags.issue && !flags.shared) {
-        this.error('Either --issue or --shared must be specified.')
-      }
-
       // eslint-disable-next-line security/detect-non-literal-fs-filename
-      const fileData = await readFile(args.file)
-      const filename = flags.name ?? basename(args.file)
-
-      const response = await daemonAddAsset({
-        projectPath: cwd,
-        issueId: flags.issue,
-        filename,
-        data: fileData,
-        isShared: flags.shared,
-      })
-
-      if (!response.success) {
-        this.error(response.error)
-      }
-
-      this.log(`Added asset "${filename}"`)
-      this.log(`  Path: ${response.path}`)
-      this.log(`  Size: ${response.asset.size} bytes`)
-      this.log(`  Type: ${response.asset.mimeType}`)
+      fileData = await readFile(args.file)
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error)
-      if (msg.includes('UNAVAILABLE') || msg.includes('ECONNREFUSED')) {
-        this.error(
-          'Centy daemon is not running. Please start the daemon first.'
-        )
-      }
       if (msg.includes('ENOENT')) {
         this.error(`File not found: ${args.file}`)
       }
-      this.error(msg)
+      throw error instanceof Error ? error : new Error(String(error))
     }
+
+    const filename = flags.name ?? basename(args.file)
+
+    const response = await daemonAddAsset({
+      projectPath: cwd,
+      issueId: flags.issue,
+      filename,
+      data: fileData,
+      isShared: flags.shared,
+    })
+
+    if (!response.success) {
+      this.error(response.error)
+    }
+
+    this.log(`Added asset "${filename}"`)
+    this.log(`  Path: ${response.path}`)
+    this.log(`  Size: ${response.asset.size} bytes`)
+    this.log(`  Type: ${response.asset.mimeType}`)
   }
 }

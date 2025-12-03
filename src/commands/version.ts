@@ -26,37 +26,25 @@ export default class Version extends Command {
     const { flags } = await this.parse(Version)
     const cwd = process.env['CENTY_CWD'] ?? process.cwd()
 
-    try {
-      const initStatus = await daemonIsInitialized({ projectPath: cwd })
-      if (!initStatus.initialized) {
-        this.error('.centy folder not initialized. Run "centy init" first.')
-      }
+    const initStatus = await daemonIsInitialized({ projectPath: cwd })
+    if (!initStatus.initialized) {
+      this.error('.centy folder not initialized. Run "centy init" first.')
+    }
 
-      const response = await daemonGetProjectVersion({
-        projectPath: cwd,
-      })
+    const response = await daemonGetProjectVersion({
+      projectPath: cwd,
+    })
 
-      if (flags.json) {
-        this.log(JSON.stringify(response, null, 2))
-        return
-      }
+    if (flags.json) {
+      this.log(JSON.stringify(response, null, 2))
+      return
+    }
 
-      this.log(`Project Version: ${response.projectVersion}`)
-      this.log(`Daemon Version: ${response.daemonVersion}`)
-      this.log(`Status: ${this.formatComparison(response.comparison)}`)
-      if (response.degradedMode) {
-        this.warn(
-          'Running in degraded mode - project version is ahead of daemon'
-        )
-      }
-    } catch (error) {
-      const msg = error instanceof Error ? error.message : String(error)
-      if (msg.includes('UNAVAILABLE') || msg.includes('ECONNREFUSED')) {
-        this.error(
-          'Centy daemon is not running. Please start the daemon first.'
-        )
-      }
-      this.error(msg)
+    this.log(`Project Version: ${response.projectVersion}`)
+    this.log(`Daemon Version: ${response.daemonVersion}`)
+    this.log(`Status: ${this.formatComparison(response.comparison)}`)
+    if (response.degradedMode) {
+      this.warn('Running in degraded mode - project version is ahead of daemon')
     }
   }
 

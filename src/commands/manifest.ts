@@ -1,6 +1,5 @@
 import { Command, Flags } from '@oclif/core'
 
-import { checkDaemonConnection } from '../daemon/check-daemon-connection.js'
 import { daemonGetManifest } from '../daemon/daemon-get-manifest.js'
 import { daemonIsInitialized } from '../daemon/daemon-is-initialized.js'
 
@@ -25,15 +24,6 @@ export default class Manifest extends Command {
   public async run(): Promise<void> {
     const { flags } = await this.parse(Manifest)
     const cwd = process.env['CENTY_CWD'] ?? process.cwd()
-
-    // Check daemon connection first
-    const connectionStatus = await checkDaemonConnection()
-    if (!connectionStatus.connected) {
-      this.error(
-        connectionStatus.error ??
-          'Centy daemon is not running. Please start the daemon first.'
-      )
-    }
 
     const initStatus = await daemonIsInitialized({ projectPath: cwd })
     if (!initStatus.initialized) {

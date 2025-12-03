@@ -1,8 +1,8 @@
 import { Command, Flags } from '@oclif/core'
 
+import { daemonIsInitialized } from '../../daemon/daemon-is-initialized.js'
 import { daemonListAssets } from '../../daemon/daemon-list-assets.js'
 import { daemonListSharedAssets } from '../../daemon/daemon-list-shared-assets.js'
-import { daemonIsInitialized } from '../../daemon/daemon-is-initialized.js'
 
 /**
  * List assets for an issue or shared assets
@@ -40,49 +40,39 @@ export default class ListAssets extends Command {
     const { flags } = await this.parse(ListAssets)
     const cwd = process.env['CENTY_CWD'] ?? process.cwd()
 
-    try {
-      const initStatus = await daemonIsInitialized({ projectPath: cwd })
-      if (!initStatus.initialized) {
-        this.error('.centy folder not initialized. Run "centy init" first.')
-      }
+    const initStatus = await daemonIsInitialized({ projectPath: cwd })
+    if (!initStatus.initialized) {
+      this.error('.centy folder not initialized. Run "centy init" first.')
+    }
 
-      if (!flags.issue && !flags.shared) {
-        this.error('Either --issue or --shared must be specified.')
-      }
+    if (!flags.issue && !flags.shared) {
+      this.error('Either --issue or --shared must be specified.')
+    }
 
-      const response = flags.shared
-        ? await daemonListSharedAssets({ projectPath: cwd })
-        : await daemonListAssets({
-            projectPath: cwd,
-            issueId: flags.issue,
-            includeShared: flags['include-shared'],
-          })
+    const response = flags.shared
+      ? await daemonListSharedAssets({ projectPath: cwd })
+      : await daemonListAssets({
+          projectPath: cwd,
+          issueId: flags.issue,
+          includeShared: flags['include-shared'],
+        })
 
-      if (flags.json) {
-        this.log(JSON.stringify(response.assets, null, 2))
-        return
-      }
+    if (flags.json) {
+      this.log(JSON.stringify(response.assets, null, 2))
+      return
+    }
 
-      if (response.assets.length === 0) {
-        this.log('No assets found.')
-        return
-      }
+    if (response.assets.length === 0) {
+      this.log('No assets found.')
+      return
+    }
 
-      this.log(`Found ${response.totalCount} asset(s):\n`)
-      for (const asset of response.assets) {
-        const shared = asset.isShared ? ' [shared]' : ''
-        this.log(
-          `${asset.filename}${shared} (${asset.size} bytes, ${asset.mimeType})`
-        )
-      }
-    } catch (error) {
-      const msg = error instanceof Error ? error.message : String(error)
-      if (msg.includes('UNAVAILABLE') || msg.includes('ECONNREFUSED')) {
-        this.error(
-          'Centy daemon is not running. Please start the daemon first.'
-        )
-      }
-      this.error(msg)
+    this.log(`Found ${response.totalCount} asset(s):\n`)
+    for (const asset of response.assets) {
+      const shared = asset.isShared ? ' [shared]' : ''
+      this.log(
+        `${asset.filename}${shared} (${asset.size} bytes, ${asset.mimeType})`
+      )
     }
   }
 }

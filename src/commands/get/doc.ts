@@ -32,39 +32,29 @@ export default class GetDoc extends Command {
     const { args, flags } = await this.parse(GetDoc)
     const cwd = process.env['CENTY_CWD'] ?? process.cwd()
 
-    try {
-      const initStatus = await daemonIsInitialized({ projectPath: cwd })
-      if (!initStatus.initialized) {
-        this.error('.centy folder not initialized. Run "centy init" first.')
-      }
-
-      const doc = await daemonGetDoc({
-        projectPath: cwd,
-        slug: args.slug,
-      })
-
-      if (flags.json) {
-        this.log(JSON.stringify(doc, null, 2))
-        return
-      }
-
-      this.log(`Title: ${doc.title}`)
-      this.log(`Slug: ${doc.slug}`)
-      this.log(
-        `Created: ${doc.metadata !== undefined ? doc.metadata.createdAt : 'unknown'}`
-      )
-      this.log(
-        `Updated: ${doc.metadata !== undefined ? doc.metadata.updatedAt : 'unknown'}`
-      )
-      this.log(`\nContent:\n${doc.content}`)
-    } catch (error) {
-      const msg = error instanceof Error ? error.message : String(error)
-      if (msg.includes('UNAVAILABLE') || msg.includes('ECONNREFUSED')) {
-        this.error(
-          'Centy daemon is not running. Please start the daemon first.'
-        )
-      }
-      this.error(msg)
+    const initStatus = await daemonIsInitialized({ projectPath: cwd })
+    if (!initStatus.initialized) {
+      this.error('.centy folder not initialized. Run "centy init" first.')
     }
+
+    const doc = await daemonGetDoc({
+      projectPath: cwd,
+      slug: args.slug,
+    })
+
+    if (flags.json) {
+      this.log(JSON.stringify(doc, null, 2))
+      return
+    }
+
+    this.log(`Title: ${doc.title}`)
+    this.log(`Slug: ${doc.slug}`)
+    this.log(
+      `Created: ${doc.metadata !== undefined ? doc.metadata.createdAt : 'unknown'}`
+    )
+    this.log(
+      `Updated: ${doc.metadata !== undefined ? doc.metadata.updatedAt : 'unknown'}`
+    )
+    this.log(`\nContent:\n${doc.content}`)
   }
 }

@@ -33,43 +33,33 @@ export default class UntrackProject extends Command {
     const { args, flags } = await this.parse(UntrackProject)
     const projectPath = args.path ?? process.env['CENTY_CWD'] ?? process.cwd()
 
-    try {
-      if (!flags.force) {
-        const readline = await import('node:readline')
-        const rl = readline.createInterface({
-          input: process.stdin,
-          output: process.stdout,
-        })
-        const answer = await new Promise<string>(resolve => {
-          rl.question(
-            `Are you sure you want to untrack project at "${projectPath}"? (y/N) `,
-            resolve
-          )
-        })
-        rl.close()
-        if (answer.toLowerCase() !== 'y') {
-          this.log('Cancelled.')
-          return
-        }
-      }
-
-      const response = await daemonUntrackProject({
-        projectPath,
+    if (!flags.force) {
+      const readline = await import('node:readline')
+      const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
       })
-
-      if (!response.success) {
-        this.error(response.error)
-      }
-
-      this.log(`Untracked project at "${projectPath}"`)
-    } catch (error) {
-      const msg = error instanceof Error ? error.message : String(error)
-      if (msg.includes('UNAVAILABLE') || msg.includes('ECONNREFUSED')) {
-        this.error(
-          'Centy daemon is not running. Please start the daemon first.'
+      const answer = await new Promise<string>(resolve => {
+        rl.question(
+          `Are you sure you want to untrack project at "${projectPath}"? (y/N) `,
+          resolve
         )
+      })
+      rl.close()
+      if (answer.toLowerCase() !== 'y') {
+        this.log('Cancelled.')
+        return
       }
-      this.error(msg)
     }
+
+    const response = await daemonUntrackProject({
+      projectPath,
+    })
+
+    if (!response.success) {
+      this.error(response.error)
+    }
+
+    this.log(`Untracked project at "${projectPath}"`)
   }
 }

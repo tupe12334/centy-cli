@@ -34,52 +34,42 @@ export default class GetIssue extends Command {
     const { args, flags } = await this.parse(GetIssue)
     const cwd = process.env['CENTY_CWD'] ?? process.cwd()
 
-    try {
-      const initStatus = await daemonIsInitialized({ projectPath: cwd })
-      if (!initStatus.initialized) {
-        this.error('.centy folder not initialized. Run "centy init" first.')
-      }
+    const initStatus = await daemonIsInitialized({ projectPath: cwd })
+    if (!initStatus.initialized) {
+      this.error('.centy folder not initialized. Run "centy init" first.')
+    }
 
-      // Try to parse as display number first
-      const displayNumber = Number.parseInt(args.id, 10)
-      const isDisplayNumber = !Number.isNaN(displayNumber) && displayNumber > 0
+    // Try to parse as display number first
+    const displayNumber = Number.parseInt(args.id, 10)
+    const isDisplayNumber = !Number.isNaN(displayNumber) && displayNumber > 0
 
-      const issue = isDisplayNumber
-        ? await daemonGetIssueByDisplayNumber({
-            projectPath: cwd,
-            displayNumber,
-          })
-        : await daemonGetIssue({
-            projectPath: cwd,
-            issueId: args.id,
-          })
+    const issue = isDisplayNumber
+      ? await daemonGetIssueByDisplayNumber({
+          projectPath: cwd,
+          displayNumber,
+        })
+      : await daemonGetIssue({
+          projectPath: cwd,
+          issueId: args.id,
+        })
 
-      if (flags.json) {
-        this.log(JSON.stringify(issue, null, 2))
-        return
-      }
+    if (flags.json) {
+      this.log(JSON.stringify(issue, null, 2))
+      return
+    }
 
-      const meta = issue.metadata
-      this.log(`Issue #${issue.displayNumber}`)
-      this.log(`ID: ${issue.id}`)
-      this.log(`Title: ${issue.title}`)
-      this.log(`Status: ${meta !== undefined ? meta.status : 'unknown'}`)
-      this.log(
-        `Priority: ${meta !== undefined ? (meta.priorityLabel !== '' ? meta.priorityLabel : `P${meta.priority}`) : 'P?'}`
-      )
-      this.log(`Created: ${meta !== undefined ? meta.createdAt : 'unknown'}`)
-      this.log(`Updated: ${meta !== undefined ? meta.updatedAt : 'unknown'}`)
-      if (issue.description) {
-        this.log(`\nDescription:\n${issue.description}`)
-      }
-    } catch (error) {
-      const msg = error instanceof Error ? error.message : String(error)
-      if (msg.includes('UNAVAILABLE') || msg.includes('ECONNREFUSED')) {
-        this.error(
-          'Centy daemon is not running. Please start the daemon first.'
-        )
-      }
-      this.error(msg)
+    const meta = issue.metadata
+    this.log(`Issue #${issue.displayNumber}`)
+    this.log(`ID: ${issue.id}`)
+    this.log(`Title: ${issue.title}`)
+    this.log(`Status: ${meta !== undefined ? meta.status : 'unknown'}`)
+    this.log(
+      `Priority: ${meta !== undefined ? (meta.priorityLabel !== '' ? meta.priorityLabel : `P${meta.priority}`) : 'P?'}`
+    )
+    this.log(`Created: ${meta !== undefined ? meta.createdAt : 'unknown'}`)
+    this.log(`Updated: ${meta !== undefined ? meta.updatedAt : 'unknown'}`)
+    if (issue.description) {
+      this.log(`\nDescription:\n${issue.description}`)
     }
   }
 }

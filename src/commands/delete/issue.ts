@@ -34,49 +34,39 @@ export default class DeleteIssue extends Command {
     const { args, flags } = await this.parse(DeleteIssue)
     const cwd = process.env['CENTY_CWD'] ?? process.cwd()
 
-    try {
-      const initStatus = await daemonIsInitialized({ projectPath: cwd })
-      if (!initStatus.initialized) {
-        this.error('.centy folder not initialized. Run "centy init" first.')
-      }
-
-      if (!flags.force) {
-        const readline = await import('node:readline')
-        const rl = readline.createInterface({
-          input: process.stdin,
-          output: process.stdout,
-        })
-        const answer = await new Promise<string>(resolve => {
-          rl.question(
-            `Are you sure you want to delete issue ${args.id}? (y/N) `,
-            resolve
-          )
-        })
-        rl.close()
-        if (answer.toLowerCase() !== 'y') {
-          this.log('Cancelled.')
-          return
-        }
-      }
-
-      const response = await daemonDeleteIssue({
-        projectPath: cwd,
-        issueId: args.id,
-      })
-
-      if (!response.success) {
-        this.error(response.error)
-      }
-
-      this.log(`Deleted issue ${args.id}`)
-    } catch (error) {
-      const msg = error instanceof Error ? error.message : String(error)
-      if (msg.includes('UNAVAILABLE') || msg.includes('ECONNREFUSED')) {
-        this.error(
-          'Centy daemon is not running. Please start the daemon first.'
-        )
-      }
-      this.error(msg)
+    const initStatus = await daemonIsInitialized({ projectPath: cwd })
+    if (!initStatus.initialized) {
+      this.error('.centy folder not initialized. Run "centy init" first.')
     }
+
+    if (!flags.force) {
+      const readline = await import('node:readline')
+      const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+      })
+      const answer = await new Promise<string>(resolve => {
+        rl.question(
+          `Are you sure you want to delete issue ${args.id}? (y/N) `,
+          resolve
+        )
+      })
+      rl.close()
+      if (answer.toLowerCase() !== 'y') {
+        this.log('Cancelled.')
+        return
+      }
+    }
+
+    const response = await daemonDeleteIssue({
+      projectPath: cwd,
+      issueId: args.id,
+    })
+
+    if (!response.success) {
+      this.error(response.error)
+    }
+
+    this.log(`Deleted issue ${args.id}`)
   }
 }

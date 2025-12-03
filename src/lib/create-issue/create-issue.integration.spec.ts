@@ -81,6 +81,7 @@ describe('createIssue integration tests', () => {
         cwd: '/project',
         title: 'Test Issue',
         description: 'This is a test',
+        priority: 'medium',
         output: collector.stream,
       })
 
@@ -90,7 +91,7 @@ describe('createIssue integration tests', () => {
         projectPath: '/project',
         title: 'Test Issue',
         description: 'This is a test',
-        priority: 0, // default (no priority specified)
+        priority: 2, // medium = 2
         status: 'open',
         customFields: {},
       })
@@ -121,7 +122,7 @@ describe('createIssue integration tests', () => {
       })
     })
 
-    it('should use default priority and status', async () => {
+    it('should use medium priority when specified', async () => {
       mockDaemonIsInitialized.mockResolvedValue(createInitializedResponse())
       mockDaemonCreateIssue.mockResolvedValue(createMockIssueResponse())
 
@@ -130,12 +131,13 @@ describe('createIssue integration tests', () => {
         cwd: '/project',
         title: 'Default values issue',
         description: '',
+        priority: 'medium',
         output: collector.stream,
       })
 
       expect(mockDaemonCreateIssue).toHaveBeenCalledWith(
         expect.objectContaining({
-          priority: 0, // default (no priority specified)
+          priority: 2, // medium = 2
           status: 'open',
         })
       )
@@ -154,6 +156,7 @@ describe('createIssue integration tests', () => {
         cwd: '/project',
         title: 'Test',
         description: '',
+        priority: 'medium',
         output: collector.stream,
       })
 
@@ -209,6 +212,7 @@ describe('createIssue integration tests', () => {
         cwd: '/project',
         title: 'Test',
         description: '',
+        priority: 'medium',
         output: collector.stream,
       })
 
@@ -257,6 +261,7 @@ describe('createIssue integration tests', () => {
         cwd: '/project',
         title: 'Custom Fields Test',
         description: '',
+        priority: 'medium',
         customFields: {
           assignee: 'john',
           sprint: 5,
@@ -285,6 +290,7 @@ describe('createIssue integration tests', () => {
         cwd: '/project',
         title: 'Output Test',
         description: '',
+        priority: 'medium',
         output: collector.stream,
       })
 
@@ -307,6 +313,7 @@ describe('createIssue integration tests', () => {
         cwd: '/project',
         title: 'Path Test',
         description: '',
+        priority: 'medium',
         output: collector.stream,
       })
 

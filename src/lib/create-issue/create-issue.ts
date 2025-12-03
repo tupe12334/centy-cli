@@ -94,7 +94,7 @@ export async function createIssue(
       projectPath: cwd,
       title: input.title,
       description: input.description,
-      priority: convertPriority(opts.priority),
+      priority: convertPriority(input.priority),
       status: opts.status ?? 'open',
       customFields: convertCustomFields(opts.customFields),
     })

@@ -166,6 +166,35 @@
       "isESM": true,
       "relativePath": ["dist", "commands", "shutdown.js"]
     },
+    "start": {
+      "aliases": [],
+      "args": {},
+      "description": "Start the centy daemon",
+      "examples": [
+        "<%= config.bin %> start",
+        "<%= config.bin %> start --foreground",
+        "<%= config.bin %> start -f"
+      ],
+      "flags": {
+        "foreground": {
+          "char": "f",
+          "description": "Run daemon in foreground (blocks terminal)",
+          "name": "foreground",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "start",
+      "pluginAlias": "centy",
+      "pluginName": "centy",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": ["dist", "commands", "start.js"]
+    },
     "update": {
       "aliases": [],
       "args": {},

@@ -22,7 +22,8 @@
     "unittests",
     "vitest",
     "עולם",
-    "שלום"
+    "שלום",
+    "opentui"
   ],
   "languageSettings": [
     {
@@ -35,6 +36,7 @@
     "dist",
     "coverage",
     "pnpm-lock.yaml",
-    "*.min.js"
+    "*.min.js",
+    "bun.lock"
   ]
 }

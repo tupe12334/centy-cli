@@ -21,7 +21,8 @@
     "oclif.manifest.json"
   ],
   "scripts": {
-    "build": "tsc && pnpm run manifest",
+    "build": "bun run build:tsc && bun run manifest",
+    "build:tsc": "tsc",
     "dev": "tsc --watch",
     "manifest": "oclif manifest",
     "test": "vitest",
@@ -37,7 +38,7 @@
     "prepare": "husky",
     "release": "release-it",
     "postpack": "rm -f oclif.manifest.json",
-    "prepack": "pnpm run build"
+    "prepack": "bun run build"
   },
   "keywords": [
     "cli",
@@ -76,7 +77,9 @@
     "@commitlint/config-conventional": "^20.0.0",
     "@cspell/dict-he": "^4.0.5",
     "@types/node": "^24.10.1",
+    "@types/react": "^19.2.7",
     "@vitest/coverage-v8": "^4.0.15",
+    "bun-types": "^1.3.3",
     "cspell": "^9.4.0",
     "eslint": "^9.39.1",
     "eslint-config-agent": "^1.8.9",
@@ -96,6 +99,9 @@
     "@grpc/grpc-js": "^1.12.2",
     "@grpc/proto-loader": "^0.7.13",
     "@oclif/core": "^4.8.0",
-    "@oclif/plugin-help": "^6.2.36"
+    "@oclif/plugin-help": "^6.2.36",
+    "@opentui/core": "^0.1.56",
+    "@opentui/react": "^0.1.56",
+    "react": "^19.2.1"
   }
 }

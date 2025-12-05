@@ -1,7 +1,12 @@
 {
   "$schema": "https://unpkg.com/knip@latest/schema.json",
-  "entry": ["src/index.ts", "src/commands/**/*.ts", "bin/*.js"],
-  "project": ["src/**/*.ts"],
+  "entry": [
+    "src/index.ts",
+    "src/commands/**/*.ts",
+    "src/tui/index.ts",
+    "bin/*.js"
+  ],
+  "project": ["src/**/*.ts", "src/**/*.tsx"],
   "ignore": [
     "**/*.spec.ts",
     "**/*.test.ts",

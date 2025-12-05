@@ -57,4 +57,21 @@ export default [
       'import/order': 'off',
     },
   },
+  {
+    // TUI modules use React patterns with multiple exports, hooks, and component composition
+    files: ['src/tui/**/*.ts', 'src/tui/**/*.tsx'],
+    rules: {
+      'ddd/require-spec-file': 'off',
+      'no-restricted-syntax': 'off',
+      'single-export/single-export': 'off',
+      'import/order': 'off',
+      'max-lines': 'off',
+      'security/detect-object-injection': 'off',
+      'no-optional-chaining/no-optional-chaining': 'off',
+      'default/no-default-params': 'off',
+      'error/no-generic-error': 'off',
+      'error/require-custom-error': 'off',
+      'custom/jsx-classname-required': 'off',
+    },
+  },
 ]

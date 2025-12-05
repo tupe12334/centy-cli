@@ -110,10 +110,17 @@ export class DaemonService {
       const response = await daemonShutdown({ delaySeconds })
       return { success: true, data: response }
     } catch (error) {
+      const msg = error instanceof Error ? error.message : String(error)
+      // CANCELLED error means daemon shut down before responding - this is success
+      if (msg.includes('CANCELLED')) {
+        return {
+          success: true,
+          data: { success: true, message: 'Daemon shutdown initiated' },
+        }
+      }
       return {
         success: false,
-        error:
-          error instanceof Error ? error.message : 'Failed to shutdown daemon',
+        error: msg || 'Failed to shutdown daemon',
       }
     }
   }
@@ -125,10 +132,17 @@ export class DaemonService {
       const response = await daemonRestart({ delaySeconds })
       return { success: true, data: response }
     } catch (error) {
+      const msg = error instanceof Error ? error.message : String(error)
+      // CANCELLED error means daemon shut down before responding - this is success
+      if (msg.includes('CANCELLED')) {
+        return {
+          success: true,
+          data: { success: true, message: 'Daemon restart initiated' },
+        }
+      }
       return {
         success: false,
-        error:
-          error instanceof Error ? error.message : 'Failed to restart daemon',
+        error: msg || 'Failed to restart daemon',
       }
     }
   }

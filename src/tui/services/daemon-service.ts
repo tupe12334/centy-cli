@@ -8,8 +8,7 @@ import { daemonListIssues } from '../../daemon/daemon-list-issues.js'
 import { daemonListDocs } from '../../daemon/daemon-list-docs.js'
 import { daemonGetConfig } from '../../daemon/daemon-get-config.js'
 import { daemonGetDaemonInfo } from '../../daemon/daemon-get-daemon-info.js'
-import { daemonShutdown } from '../../daemon/daemon-shutdown.js'
-import { daemonRestart } from '../../daemon/daemon-restart.js'
+import { daemonControlService } from '../../daemon/daemon-control-service.js'
 import { checkDaemonConnection } from '../../daemon/check-daemon-connection.js'
 import type {
   ProjectInfo,
@@ -106,45 +105,13 @@ export class DaemonService {
   async shutdown(
     delaySeconds?: number
   ): Promise<DaemonServiceResult<ShutdownResponse>> {
-    try {
-      const response = await daemonShutdown({ delaySeconds })
-      return { success: true, data: response }
-    } catch (error) {
-      const msg = error instanceof Error ? error.message : String(error)
-      // CANCELLED error means daemon shut down before responding - this is success
-      if (msg.includes('CANCELLED')) {
-        return {
-          success: true,
-          data: { success: true, message: 'Daemon shutdown initiated' },
-        }
-      }
-      return {
-        success: false,
-        error: msg || 'Failed to shutdown daemon',
-      }
-    }
+    return daemonControlService.shutdown({ delaySeconds })
   }
 
   async restart(
     delaySeconds?: number
   ): Promise<DaemonServiceResult<RestartResponse>> {
-    try {
-      const response = await daemonRestart({ delaySeconds })
-      return { success: true, data: response }
-    } catch (error) {
-      const msg = error instanceof Error ? error.message : String(error)
-      // CANCELLED error means daemon shut down before responding - this is success
-      if (msg.includes('CANCELLED')) {
-        return {
-          success: true,
-          data: { success: true, message: 'Daemon restart initiated' },
-        }
-      }
-      return {
-        success: false,
-        error: msg || 'Failed to restart daemon',
-      }
-    }
+    return daemonControlService.restart({ delaySeconds })
   }
 }
 

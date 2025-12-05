@@ -1,6 +1,6 @@
 import { Command, Flags } from '@oclif/core'
 
-import { daemonRestart } from '../daemon/daemon-restart.js'
+import { daemonControlService } from '../daemon/daemon-control-service.js'
 
 /**
  * Restart the centy daemon
@@ -24,29 +24,14 @@ export default class Restart extends Command {
   public async run(): Promise<void> {
     const { flags } = await this.parse(Restart)
 
-    try {
-      const response = await daemonRestart({
-        delaySeconds: flags.delay,
-      })
+    const result = await daemonControlService.restart({
+      delaySeconds: flags.delay,
+    })
 
-      if (!response.success) {
-        this.error(response.message)
-      }
-
-      this.log(response.message || 'Daemon restart initiated')
-    } catch (error) {
-      const msg = error instanceof Error ? error.message : String(error)
-      // CANCELLED error means daemon shut down before responding - this is success
-      if (msg.includes('CANCELLED')) {
-        this.log('Daemon restart initiated')
-        return
-      }
-      if (msg.includes('UNAVAILABLE') || msg.includes('ECONNREFUSED')) {
-        this.error(
-          'Centy daemon is not running. Please start the daemon first.'
-        )
-      }
-      this.error(msg)
+    if (!result.success) {
+      this.error(result.error ?? 'Restart failed')
     }
+
+    this.log(result.data ? result.data.message : 'Daemon restart initiated')
   }
 }

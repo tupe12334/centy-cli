@@ -1,6 +1,6 @@
 import { Command, Flags } from '@oclif/core'
 
-import { daemonShutdown } from '../daemon/daemon-shutdown.js'
+import { daemonControlService } from '../daemon/daemon-control-service.js'
 
 /**
  * Shutdown the centy daemon gracefully
@@ -24,29 +24,14 @@ export default class Shutdown extends Command {
   public async run(): Promise<void> {
     const { flags } = await this.parse(Shutdown)
 
-    try {
-      const response = await daemonShutdown({
-        delaySeconds: flags.delay,
-      })
+    const result = await daemonControlService.shutdown({
+      delaySeconds: flags.delay,
+    })
 
-      if (!response.success) {
-        this.error(response.message)
-      }
-
-      this.log(response.message || 'Daemon shutdown initiated')
-    } catch (error) {
-      const msg = error instanceof Error ? error.message : String(error)
-      // CANCELLED error means daemon shut down before responding - this is success
-      if (msg.includes('CANCELLED')) {
-        this.log('Daemon shutdown initiated')
-        return
-      }
-      if (msg.includes('UNAVAILABLE') || msg.includes('ECONNREFUSED')) {
-        this.error(
-          'Centy daemon is not running. Please start the daemon first.'
-        )
-      }
-      this.error(msg)
+    if (!result.success) {
+      this.error(result.error ?? 'Shutdown failed')
     }
+
+    this.log(result.data ? result.data.message : 'Daemon shutdown initiated')
   }
 }

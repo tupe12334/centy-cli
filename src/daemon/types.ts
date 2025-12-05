@@ -392,6 +392,7 @@ export interface GetDaemonInfoRequest {}
 export interface DaemonInfo {
   version: string
   availableVersions: string[]
+  binaryPath: string
 }
 
 export interface GetProjectVersionRequest {

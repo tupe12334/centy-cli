@@ -1,15 +1,68 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useKeyboard } from '@opentui/react'
-import type { KeyEvent } from '@opentui/core'
+import type { KeyEvent, ScrollBoxRenderable } from '@opentui/core'
 import { MainPanel } from '../layout/MainPanel.js'
 import { useProjects } from '../../hooks/useProjects.js'
 import { useNavigation } from '../../hooks/useNavigation.js'
 import type { ProjectInfo } from '../../../daemon/types.js'
 
+const ITEM_HEIGHT = 2
+
+interface ProjectItemProps {
+  project: ProjectInfo
+  isSelected: boolean
+}
+
+function ProjectItem({ project, isSelected }: ProjectItemProps) {
+  const name = project.name || project.path.split('/').pop() || project.path
+
+  return (
+    <box key={project.path} height={ITEM_HEIGHT} flexDirection="column">
+      <box flexDirection="row">
+        <text bg={isSelected ? 'gray' : undefined}>
+          {isSelected ? (
+            <b>
+              {'>'} {name}
+            </b>
+          ) : (
+            ` ${name}`
+          )}
+        </text>
+      </box>
+      <box flexDirection="row" paddingLeft={3}>
+        <text fg="gray">
+          {project.issueCount} issues, {project.docCount} docs
+        </text>
+        {!project.initialized && <text fg="yellow"> (not initialized)</text>}
+      </box>
+    </box>
+  )
+}
+
 export function ProjectList() {
   const { projects, isLoading, selectProject } = useProjects()
   const { navigate } = useNavigation()
   const [selectedIndex, setSelectedIndex] = useState(0)
+  const scrollBoxRef = useRef<ScrollBoxRenderable>(null)
+
+  useEffect(() => {
+    if (scrollBoxRef.current) {
+      const targetScrollTop = selectedIndex * ITEM_HEIGHT
+      const viewportHeight = scrollBoxRef.current.viewport.height
+      const currentScrollTop = scrollBoxRef.current.scrollTop
+
+      if (targetScrollTop < currentScrollTop) {
+        scrollBoxRef.current.scrollTo(targetScrollTop)
+      } else if (
+        targetScrollTop + ITEM_HEIGHT >
+        currentScrollTop + viewportHeight
+      ) {
+        scrollBoxRef.current.scrollTo(
+          targetScrollTop - viewportHeight + ITEM_HEIGHT
+        )
+      }
+    }
+  }, [selectedIndex])
 
   useKeyboard((event: KeyEvent) => {
     if (event.name === 'j' || event.name === 'down') {
@@ -46,35 +99,15 @@ export function ProjectList() {
 
   return (
     <MainPanel title="Projects">
-      {projects.map((project: ProjectInfo, index: number) => {
-        const isSelected = index === selectedIndex
-        const name =
-          project.name || project.path.split('/').pop() || project.path
-
-        return (
-          <box key={project.path} height={2} flexDirection="column">
-            <box flexDirection="row">
-              <text bg={isSelected ? 'gray' : undefined}>
-                {isSelected ? (
-                  <b>
-                    {'>'} {name}
-                  </b>
-                ) : (
-                  ` ${name}`
-                )}
-              </text>
-            </box>
-            <box flexDirection="row" paddingLeft={3}>
-              <text fg="gray">
-                {project.issueCount} issues, {project.docCount} docs
-              </text>
-              {!project.initialized && (
-                <text fg="yellow"> (not initialized)</text>
-              )}
-            </box>
-          </box>
-        )
-      })}
+      <scrollbox ref={scrollBoxRef} flexGrow={1} scrollY={true}>
+        {projects.map((project: ProjectInfo, index: number) => (
+          <ProjectItem
+            key={project.path}
+            project={project}
+            isSelected={index === selectedIndex}
+          />
+        ))}
+      </scrollbox>
     </MainPanel>
   )
 }

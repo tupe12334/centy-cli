@@ -1,6 +1,5 @@
 import { spawn } from 'node:child_process'
 import { join } from 'node:path'
-
 import { extract as tarExtract } from 'tar'
 
 const DAEMON_BINARY_NAME = 'centy-daemon'

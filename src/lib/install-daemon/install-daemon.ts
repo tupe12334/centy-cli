@@ -2,16 +2,72 @@ import { existsSync } from 'node:fs'
 import { mkdir, chmod, rm, rename } from 'node:fs/promises'
 import { join } from 'node:path'
 import { homedir } from 'node:os'
-
 import { fetchLatestRelease, fetchRelease } from './github-api.js'
 import { downloadAsset, downloadChecksums } from './download.js'
 import { extractArchive } from './extract.js'
 import { verifyChecksum } from './checksum.js'
 import { getPlatformTarget } from './platform.js'
-import type { InstallDaemonOptions, InstallDaemonResult } from './types.js'
+import type {
+  InstallDaemonOptions,
+  InstallDaemonResult,
+  GithubRelease,
+  PlatformTarget,
+} from './types.js'
 
 const INSTALL_DIR = join(homedir(), '.centy', 'bin')
 const DAEMON_BINARY_NAME = 'centy-daemon'
+
+async function downloadAndVerifyAsset(
+  release: GithubRelease,
+  platformTarget: PlatformTarget,
+  assetName: string,
+  archivePath: string,
+  skipChecksum: boolean,
+  log: (msg: string) => void,
+  warn: (msg: string) => void
+): Promise<boolean> {
+  log(`Downloading ${assetName}...`)
+  const asset = release.assets.find(a => a.name === assetName)
+  if (!asset) {
+    return false
+  }
+
+  await downloadAsset(asset.browser_download_url, archivePath)
+
+  if (!skipChecksum) {
+    log('Verifying checksum...')
+    const checksums = await downloadChecksums(release)
+    const valid = await verifyChecksum(archivePath, assetName, checksums)
+    if (!valid) {
+      await rm(archivePath, { force: true })
+      return false
+    }
+    log('Checksum verified')
+  } else {
+    warn('Skipping checksum verification')
+  }
+
+  return true
+}
+
+async function finalizeInstallation(
+  extractedPath: string,
+  binaryName: string
+): Promise<string> {
+  const finalPath = join(INSTALL_DIR, binaryName)
+  if (extractedPath !== finalPath) {
+    if (existsSync(finalPath)) {
+      await rm(finalPath, { force: true })
+    }
+    await rename(extractedPath, finalPath)
+  }
+
+  if (process.platform !== 'win32') {
+    await chmod(finalPath, 0o755)
+  }
+
+  return finalPath
+}
 
 export async function installDaemon(
   options?: InstallDaemonOptions
@@ -46,34 +102,27 @@ export async function installDaemon(
     log(`Installing version ${version}`)
 
     const assetName = `centy-daemon-${release.tag_name}-${platformTarget.target}.${platformTarget.extension}`
-    const asset = release.assets.find(a => a.name === assetName)
-    if (!asset) {
-      return {
-        success: false,
-        error: `No binary found for platform ${platformTarget.target} in release ${version}`,
-      }
-    }
 
     await mkdir(INSTALL_DIR, { recursive: true })
 
-    log(`Downloading ${assetName}...`)
     const archivePath = join(INSTALL_DIR, assetName)
-    await downloadAsset(asset.browser_download_url, archivePath)
+    const downloadSuccess = await downloadAndVerifyAsset(
+      release,
+      platformTarget,
+      assetName,
+      archivePath,
+      opts.skipChecksum ?? false,
+      log,
+      warn
+    )
 
-    if (!opts.skipChecksum) {
-      log('Verifying checksum...')
-      const checksums = await downloadChecksums(release)
-      const valid = await verifyChecksum(archivePath, assetName, checksums)
-      if (!valid) {
-        await rm(archivePath, { force: true })
-        return {
-          success: false,
-          error: 'Checksum verification failed',
-        }
+    if (!downloadSuccess) {
+      return {
+        success: false,
+        error: opts.skipChecksum
+          ? `No binary found for platform ${platformTarget.target} in release ${version}`
+          : 'Checksum verification failed',
       }
-      log('Checksum verified')
-    } else {
-      warn('Skipping checksum verification')
     }
 
     log('Extracting...')
@@ -83,18 +132,7 @@ export async function installDaemon(
       platformTarget.extension
     )
 
-    const finalPath = join(INSTALL_DIR, binaryName)
-    if (extractedPath !== finalPath) {
-      if (existsSync(finalPath)) {
-        await rm(finalPath, { force: true })
-      }
-      await rename(extractedPath, finalPath)
-    }
-
-    if (process.platform !== 'win32') {
-      await chmod(finalPath, 0o755)
-    }
-
+    const finalPath = await finalizeInstallation(extractedPath, binaryName)
     await rm(archivePath, { force: true })
 
     return {

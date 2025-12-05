@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto'
 import { createReadStream } from 'node:fs'
+import { ChecksumNotFoundError } from './errors.js'
 
 export async function verifyChecksum(
   filePath: string,
@@ -18,7 +19,7 @@ export async function verifyChecksum(
 
   const expectedHash = checksumMap.get(fileName)
   if (!expectedHash) {
-    throw new Error(`No checksum found for ${fileName}`)
+    throw new ChecksumNotFoundError(fileName)
   }
 
   const actualHash = await calculateSha256(filePath)
@@ -30,7 +31,9 @@ async function calculateSha256(filePath: string): Promise<string> {
     const hash = createHash('sha256')
     const stream = createReadStream(filePath)
 
-    stream.on('data', (chunk: Buffer) => hash.update(chunk))
+    stream.on('data', chunk => {
+      hash.update(chunk)
+    })
     stream.on('end', () => resolve(hash.digest('hex')))
     stream.on('error', reject)
   })

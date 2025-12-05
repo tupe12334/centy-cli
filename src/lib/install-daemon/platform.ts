@@ -1,4 +1,5 @@
 import type { PlatformTarget, Platform, Architecture } from './types.js'
+import { PlatformNotSupportedError } from './errors.js'
 
 const TARGET_MAP: Record<string, string> = {
   'linux-x64': 'x86_64-unknown-linux-gnu',
@@ -16,7 +17,7 @@ export function getPlatformTarget(): PlatformTarget {
   const target = TARGET_MAP[key]
 
   if (!target) {
-    throw new Error(`Unsupported platform: ${platform} ${arch}`)
+    throw new PlatformNotSupportedError(platform, arch)
   }
 
   return {

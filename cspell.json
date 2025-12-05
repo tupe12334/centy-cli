@@ -3,6 +3,7 @@
   "language": "en,he",
   "dictionaries": ["he"],
   "words": [
+    "aarch",
     "centy",
     "choosealicense",
     "commitlint",
@@ -13,6 +14,7 @@
     "husky",
     "knip",
     "lintstagedrc",
+    "msvc",
     "oclif",
     "oneofs",
     "pnpm",

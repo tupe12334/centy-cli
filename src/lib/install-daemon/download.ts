@@ -1,9 +1,14 @@
+/* eslint-disable single-export/single-export */
 import { createWriteStream } from 'node:fs'
 import { pipeline } from 'node:stream/promises'
 import { Readable } from 'node:stream'
-
 import type { GithubRelease } from './types.js'
+import { DownloadError } from './errors.js'
 
+/**
+ * Download operations for daemon installation
+ * Multiple exports allowed for related download operations
+ */
 export async function downloadAsset(
   url: string,
   destPath: string
@@ -15,18 +20,20 @@ export async function downloadAsset(
   })
 
   if (!response.ok) {
-    throw new Error(
+    throw new DownloadError(
       `Failed to download: ${response.status} ${response.statusText}`
     )
   }
 
   if (!response.body) {
-    throw new Error('No response body')
+    throw new DownloadError('No response body')
   }
 
   const fileStream = createWriteStream(destPath)
   await pipeline(
-    Readable.fromWeb(response.body as Parameters<typeof Readable.fromWeb>[0]),
+    Readable.fromWeb(
+      response.body as unknown as Parameters<typeof Readable.fromWeb>[0]
+    ),
     fileStream
   )
 }
@@ -38,7 +45,7 @@ export async function downloadChecksums(
     a => a.name === 'checksums-sha256.txt'
   )
   if (!checksumAsset) {
-    throw new Error('Checksum file not found in release')
+    throw new DownloadError('Checksum file not found in release')
   }
 
   const response = await fetch(checksumAsset.browser_download_url, {
@@ -48,7 +55,7 @@ export async function downloadChecksums(
   })
 
   if (!response.ok) {
-    throw new Error(`Failed to download checksums: ${response.status}`)
+    throw new DownloadError(`Failed to download checksums: ${response.status}`)
   }
 
   return response.text()

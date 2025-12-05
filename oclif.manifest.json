@@ -25,20 +25,13 @@
       "strict": true,
       "enableJsonFlag": false,
       "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "config.js"
-      ]
+      "relativePath": ["dist", "commands", "config.js"]
     },
     "info": {
       "aliases": [],
       "args": {},
       "description": "Get centy daemon info",
-      "examples": [
-        "<%= config.bin %> info",
-        "<%= config.bin %> info --json"
-      ],
+      "examples": ["<%= config.bin %> info", "<%= config.bin %> info --json"],
       "flags": {
         "json": {
           "description": "Output as JSON",
@@ -56,11 +49,7 @@
       "strict": true,
       "enableJsonFlag": false,
       "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "info.js"
-      ]
+      "relativePath": ["dist", "commands", "info.js"]
     },
     "init": {
       "aliases": [],
@@ -88,11 +77,7 @@
       "strict": true,
       "enableJsonFlag": false,
       "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "init.js"
-      ]
+      "relativePath": ["dist", "commands", "init.js"]
     },
     "manifest": {
       "aliases": [],
@@ -119,11 +104,7 @@
       "strict": true,
       "enableJsonFlag": false,
       "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "manifest.js"
-      ]
+      "relativePath": ["dist", "commands", "manifest.js"]
     },
     "restart": {
       "aliases": [],
@@ -153,11 +134,7 @@
       "strict": true,
       "enableJsonFlag": false,
       "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "restart.js"
-      ]
+      "relativePath": ["dist", "commands", "restart.js"]
     },
     "shutdown": {
       "aliases": [],
@@ -187,11 +164,7 @@
       "strict": true,
       "enableJsonFlag": false,
       "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "shutdown.js"
-      ]
+      "relativePath": ["dist", "commands", "shutdown.js"]
     },
     "start": {
       "aliases": [],
@@ -220,11 +193,7 @@
       "strict": true,
       "enableJsonFlag": false,
       "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "start.js"
-      ]
+      "relativePath": ["dist", "commands", "start.js"]
     },
     "update": {
       "aliases": [],
@@ -261,11 +230,7 @@
       "strict": true,
       "enableJsonFlag": false,
       "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "update.js"
-      ]
+      "relativePath": ["dist", "commands", "update.js"]
     },
     "version": {
       "aliases": [],
@@ -292,11 +257,7 @@
       "strict": true,
       "enableJsonFlag": false,
       "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "version.js"
-      ]
+      "relativePath": ["dist", "commands", "version.js"]
     },
     "add:asset": {
       "aliases": [],
@@ -347,12 +308,7 @@
       "strict": true,
       "enableJsonFlag": false,
       "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "add",
-        "asset.js"
-      ]
+      "relativePath": ["dist", "commands", "add", "asset.js"]
     },
     "create:doc": {
       "aliases": [],
@@ -406,12 +362,7 @@
       "strict": true,
       "enableJsonFlag": false,
       "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "create",
-        "doc.js"
-      ]
+      "relativePath": ["dist", "commands", "create", "doc.js"]
     },
     "create:issue": {
       "aliases": [],
@@ -445,11 +396,7 @@
           "name": "priority",
           "hasDynamicHelp": false,
           "multiple": false,
-          "options": [
-            "low",
-            "medium",
-            "high"
-          ],
+          "options": ["low", "medium", "high"],
           "type": "option"
         },
         "status": {
@@ -471,12 +418,7 @@
       "strict": true,
       "enableJsonFlag": false,
       "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "create",
-        "issue.js"
-      ]
+      "relativePath": ["dist", "commands", "create", "issue.js"]
     },
     "delete:asset": {
       "aliases": [],
@@ -526,12 +468,7 @@
       "strict": true,
       "enableJsonFlag": false,
       "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "delete",
-        "asset.js"
-      ]
+      "relativePath": ["dist", "commands", "delete", "asset.js"]
     },
     "delete:doc": {
       "aliases": [],
@@ -565,12 +502,7 @@
       "strict": true,
       "enableJsonFlag": false,
       "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "delete",
-        "doc.js"
-      ]
+      "relativePath": ["dist", "commands", "delete", "doc.js"]
     },
     "delete:issue": {
       "aliases": [],
@@ -605,12 +537,51 @@
       "strict": true,
       "enableJsonFlag": false,
       "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "delete",
-        "issue.js"
-      ]
+      "relativePath": ["dist", "commands", "delete", "issue.js"]
+    },
+    "install:daemon": {
+      "aliases": [],
+      "args": {},
+      "description": "Download and install the centy daemon binary",
+      "examples": [
+        "<%= config.bin %> install daemon",
+        "<%= config.bin %> install daemon --version 0.1.0",
+        "<%= config.bin %> install daemon --force",
+        "<%= config.bin %> install daemon --skip-checksum"
+      ],
+      "flags": {
+        "version": {
+          "char": "v",
+          "description": "Specific version to install (default: latest)",
+          "name": "version",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "force": {
+          "char": "f",
+          "description": "Force reinstall even if already installed",
+          "name": "force",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-checksum": {
+          "description": "Skip SHA256 checksum verification",
+          "name": "skip-checksum",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "install:daemon",
+      "pluginAlias": "centy",
+      "pluginName": "centy",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": ["dist", "commands", "install", "daemon.js"]
     },
     "list:assets": {
       "aliases": [],
@@ -659,12 +630,7 @@
       "strict": true,
       "enableJsonFlag": false,
       "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "list",
-        "assets.js"
-      ]
+      "relativePath": ["dist", "commands", "list", "assets.js"]
     },
     "list:docs": {
       "aliases": [],
@@ -691,12 +657,7 @@
       "strict": true,
       "enableJsonFlag": false,
       "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "list",
-        "docs.js"
-      ]
+      "relativePath": ["dist", "commands", "list", "docs.js"]
     },
     "list:issues": {
       "aliases": [],
@@ -740,12 +701,7 @@
       "strict": true,
       "enableJsonFlag": false,
       "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "list",
-        "issues.js"
-      ]
+      "relativePath": ["dist", "commands", "list", "issues.js"]
     },
     "list:projects": {
       "aliases": [],
@@ -779,43 +735,7 @@
       "strict": true,
       "enableJsonFlag": false,
       "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "list",
-        "projects.js"
-      ]
-    },
-    "register:project": {
-      "aliases": [],
-      "args": {
-        "path": {
-          "description": "Path to the project (defaults to current directory)",
-          "name": "path",
-          "required": false
-        }
-      },
-      "description": "Register a project for tracking",
-      "examples": [
-        "<%= config.bin %> register project",
-        "<%= config.bin %> register project /path/to/project"
-      ],
-      "flags": {},
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "register:project",
-      "pluginAlias": "centy",
-      "pluginName": "centy",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": false,
-      "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "register",
-        "project.js"
-      ]
+      "relativePath": ["dist", "commands", "list", "projects.js"]
     },
     "untrack:project": {
       "aliases": [],
@@ -850,12 +770,7 @@
       "strict": true,
       "enableJsonFlag": false,
       "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "untrack",
-        "project.js"
-      ]
+      "relativePath": ["dist", "commands", "untrack", "project.js"]
     },
     "update:doc": {
       "aliases": [],
@@ -906,12 +821,7 @@
       "strict": true,
       "enableJsonFlag": false,
       "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "update",
-        "doc.js"
-      ]
+      "relativePath": ["dist", "commands", "update", "doc.js"]
     },
     "update:issue": {
       "aliases": [],
@@ -971,12 +881,33 @@
       "strict": true,
       "enableJsonFlag": false,
       "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "update",
-        "issue.js"
-      ]
+      "relativePath": ["dist", "commands", "update", "issue.js"]
+    },
+    "register:project": {
+      "aliases": [],
+      "args": {
+        "path": {
+          "description": "Path to the project (defaults to current directory)",
+          "name": "path",
+          "required": false
+        }
+      },
+      "description": "Register a project for tracking",
+      "examples": [
+        "<%= config.bin %> register project",
+        "<%= config.bin %> register project /path/to/project"
+      ],
+      "flags": {},
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "register:project",
+      "pluginAlias": "centy",
+      "pluginName": "centy",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": ["dist", "commands", "register", "project.js"]
     },
     "get:asset": {
       "aliases": [],
@@ -1026,12 +957,7 @@
       "strict": true,
       "enableJsonFlag": false,
       "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "get",
-        "asset.js"
-      ]
+      "relativePath": ["dist", "commands", "get", "asset.js"]
     },
     "get:doc": {
       "aliases": [],
@@ -1064,12 +990,7 @@
       "strict": true,
       "enableJsonFlag": false,
       "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "get",
-        "doc.js"
-      ]
+      "relativePath": ["dist", "commands", "get", "doc.js"]
     },
     "get:issue": {
       "aliases": [],
@@ -1103,12 +1024,7 @@
       "strict": true,
       "enableJsonFlag": false,
       "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "get",
-        "issue.js"
-      ]
+      "relativePath": ["dist", "commands", "get", "issue.js"]
     },
     "get:project": {
       "aliases": [],
@@ -1142,13 +1058,8 @@
       "strict": true,
       "enableJsonFlag": false,
       "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "get",
-        "project.js"
-      ]
+      "relativePath": ["dist", "commands", "get", "project.js"]
     }
   },
-  "version": "0.0.6"
+  "version": "0.0.8"
 }

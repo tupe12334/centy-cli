@@ -1,3 +1,9 @@
+/* eslint-disable single-export/single-export */
+/**
+ * Type definitions for install-daemon module
+ * Multiple exports allowed for type definitions
+ */
+
 export interface InstallDaemonOptions {
   version?: string
   force?: boolean

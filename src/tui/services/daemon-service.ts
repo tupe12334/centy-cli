@@ -8,6 +8,8 @@ import { daemonListIssues } from '../../daemon/daemon-list-issues.js'
 import { daemonListDocs } from '../../daemon/daemon-list-docs.js'
 import { daemonGetConfig } from '../../daemon/daemon-get-config.js'
 import { daemonGetDaemonInfo } from '../../daemon/daemon-get-daemon-info.js'
+import { daemonShutdown } from '../../daemon/daemon-shutdown.js'
+import { daemonRestart } from '../../daemon/daemon-restart.js'
 import { checkDaemonConnection } from '../../daemon/check-daemon-connection.js'
 import type {
   ProjectInfo,
@@ -15,6 +17,8 @@ import type {
   Doc,
   Config,
   DaemonInfo,
+  ShutdownResponse,
+  RestartResponse,
 } from '../../daemon/types.js'
 
 export interface DaemonServiceResult<T> {
@@ -95,6 +99,36 @@ export class DaemonService {
         success: false,
         error:
           error instanceof Error ? error.message : 'Failed to get daemon info',
+      }
+    }
+  }
+
+  async shutdown(
+    delaySeconds?: number
+  ): Promise<DaemonServiceResult<ShutdownResponse>> {
+    try {
+      const response = await daemonShutdown({ delaySeconds })
+      return { success: true, data: response }
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error instanceof Error ? error.message : 'Failed to shutdown daemon',
+      }
+    }
+  }
+
+  async restart(
+    delaySeconds?: number
+  ): Promise<DaemonServiceResult<RestartResponse>> {
+    try {
+      const response = await daemonRestart({ delaySeconds })
+      return { success: true, data: response }
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error instanceof Error ? error.message : 'Failed to restart daemon',
       }
     }
   }

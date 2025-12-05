@@ -5,6 +5,7 @@ import { Sidebar } from './components/layout/Sidebar.js'
 import { StatusBar } from './components/layout/StatusBar.js'
 import { ProjectList } from './components/domain/ProjectList.js'
 import { IssueList } from './components/domain/IssueList.js'
+import { DaemonPanel } from './components/domain/DaemonPanel.js'
 import { MainPanel } from './components/layout/MainPanel.js'
 import { useNavigation } from './hooks/useNavigation.js'
 import { useDaemonConnection } from './hooks/useDaemonConnection.js'
@@ -101,11 +102,7 @@ function renderView(view: ViewId) {
         </MainPanel>
       )
     case 'daemon':
-      return (
-        <MainPanel title="Daemon">
-          <text fg="gray">Daemon control coming soon...</text>
-        </MainPanel>
-      )
+      return <DaemonPanel />
     default:
       return <ProjectList />
   }

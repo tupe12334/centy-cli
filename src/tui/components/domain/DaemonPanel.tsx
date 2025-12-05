@@ -5,6 +5,7 @@ import {
   useDaemonActions,
   type ActionState,
 } from '../../hooks/useDaemonActions.js'
+import { useAutostart } from '../../hooks/useAutostart.js'
 import type { DaemonInfo } from '../../../daemon/types.js'
 
 interface DaemonInfoDisplayProps {
@@ -18,6 +19,12 @@ function DaemonInfoDisplay({ daemonInfo }: DaemonInfoDisplayProps) {
         <text>Version: </text>
         <text fg="cyan">{daemonInfo.version}</text>
       </box>
+      {daemonInfo.binaryPath && (
+        <box flexDirection="row">
+          <text>Binary: </text>
+          <text fg="cyan">{daemonInfo.binaryPath}</text>
+        </box>
+      )}
       {daemonInfo.availableVersions.length > 0 && (
         <box flexDirection="column">
           <text fg="gray">Available versions:</text>
@@ -30,7 +37,15 @@ function DaemonInfoDisplay({ daemonInfo }: DaemonInfoDisplayProps) {
   )
 }
 
-function DaemonControls() {
+interface DaemonControlsProps {
+  showAutostartToggle: boolean
+  autostartEnabled: boolean | null
+}
+
+function DaemonControls({
+  showAutostartToggle,
+  autostartEnabled,
+}: DaemonControlsProps) {
   return (
     <box marginTop={1} flexDirection="column">
       <text>
@@ -40,6 +55,11 @@ function DaemonControls() {
         <text fg="gray">[s] Shutdown daemon</text>
         <text fg="gray">[r] Restart daemon</text>
         <text fg="gray">[c] Check connection</text>
+        {showAutostartToggle && (
+          <text fg="gray">
+            [a] {autostartEnabled ? 'Disable' : 'Enable'} autostart on boot
+          </text>
+        )}
       </box>
     </box>
   )
@@ -95,6 +115,20 @@ export function DaemonPanel() {
   const { connected, retry } = useDaemonConnection()
   const { daemonInfo, isLoading } = useDaemonInfo({ connected })
   const { actionState, actionMessage } = useDaemonActions({ connected, retry })
+  const {
+    autostartEnabled,
+    message: autostartMessage,
+    state: autostartState,
+    isSupported: autostartSupported,
+  } = useAutostart({ enabled: true })
+
+  // Combine messages, prioritizing action messages
+  const displayMessage = actionMessage || autostartMessage
+  const displayState = actionMessage
+    ? actionState
+    : autostartState === 'confirming'
+      ? 'confirming'
+      : 'idle'
 
   if (!connected) {
     return <DisconnectedView actionMessage={actionMessage} />
@@ -116,9 +150,20 @@ export function DaemonPanel() {
           <text fg="green">Connected</text>
         </box>
         {daemonInfo && <DaemonInfoDisplay daemonInfo={daemonInfo} />}
-        <DaemonControls />
-        {actionMessage && (
-          <ActionMessage message={actionMessage} actionState={actionState} />
+        {autostartSupported && (
+          <box flexDirection="row">
+            <text>Autostart: </text>
+            <text fg={autostartEnabled ? 'green' : 'gray'}>
+              {autostartEnabled ? 'Enabled' : 'Disabled'}
+            </text>
+          </box>
+        )}
+        <DaemonControls
+          showAutostartToggle={autostartSupported}
+          autostartEnabled={autostartEnabled}
+        />
+        {displayMessage && (
+          <ActionMessage message={displayMessage} actionState={displayState} />
         )}
       </box>
     </MainPanel>

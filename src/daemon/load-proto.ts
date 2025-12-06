@@ -68,6 +68,20 @@ import type {
   ShutdownResponse,
   RestartRequest,
   RestartResponse,
+  // PR types
+  CreatePrRequest,
+  CreatePrResponse,
+  GetPrRequest,
+  GetPrByDisplayNumberRequest,
+  PullRequest,
+  ListPrsRequest,
+  ListPrsResponse,
+  UpdatePrRequest,
+  UpdatePrResponse,
+  DeletePrRequest,
+  DeletePrResponse,
+  GetNextPrNumberRequest,
+  GetNextPrNumberResponse,
 } from './types.js'
 
 const currentDir = dirname(fileURLToPath(import.meta.url))
@@ -260,6 +274,39 @@ interface CentyDaemonClient {
   restart(
     request: RestartRequest,
     callback: (error: ServiceError | null, response: RestartResponse) => void
+  ): void
+
+  // PR operations
+  createPr(
+    request: CreatePrRequest,
+    callback: (error: ServiceError | null, response: CreatePrResponse) => void
+  ): void
+  getPr(
+    request: GetPrRequest,
+    callback: (error: ServiceError | null, response: PullRequest) => void
+  ): void
+  getPrByDisplayNumber(
+    request: GetPrByDisplayNumberRequest,
+    callback: (error: ServiceError | null, response: PullRequest) => void
+  ): void
+  listPrs(
+    request: ListPrsRequest,
+    callback: (error: ServiceError | null, response: ListPrsResponse) => void
+  ): void
+  updatePr(
+    request: UpdatePrRequest,
+    callback: (error: ServiceError | null, response: UpdatePrResponse) => void
+  ): void
+  deletePr(
+    request: DeletePrRequest,
+    callback: (error: ServiceError | null, response: DeletePrResponse) => void
+  ): void
+  getNextPrNumber(
+    request: GetNextPrNumberRequest,
+    callback: (
+      error: ServiceError | null,
+      response: GetNextPrNumberResponse
+    ) => void
   ): void
 }
 

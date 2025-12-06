@@ -450,3 +450,116 @@ export interface RestartResponse {
   success: boolean
   message: string
 }
+
+// ============ PR Types ============
+
+export interface CreatePrRequest {
+  projectPath: string
+  title: string
+  description: string
+  sourceBranch?: string
+  targetBranch?: string
+  linkedIssues: string[]
+  reviewers: string[]
+  priority: number // 1 = highest priority, 0 = use default
+  status: string
+  customFields: Record<string, string>
+  template?: string
+}
+
+export interface CreatePrResponse {
+  success: boolean
+  error: string
+  id: string
+  displayNumber: number
+  createdFiles: string[]
+  manifest?: Manifest
+  detectedSourceBranch: string
+}
+
+export interface GetNextPrNumberRequest {
+  projectPath: string
+}
+
+export interface GetNextPrNumberResponse {
+  nextNumber: number
+}
+
+export interface PullRequest {
+  id: string
+  displayNumber: number
+  title: string
+  description: string
+  metadata: PrMetadata
+}
+
+export interface PrMetadata {
+  displayNumber: number
+  status: string
+  sourceBranch: string
+  targetBranch: string
+  linkedIssues: string[]
+  reviewers: string[]
+  priority: number
+  priorityLabel: string
+  createdAt: string
+  updatedAt: string
+  mergedAt: string
+  closedAt: string
+  customFields: Record<string, string>
+}
+
+export interface GetPrRequest {
+  projectPath: string
+  prId: string
+}
+
+export interface GetPrByDisplayNumberRequest {
+  projectPath: string
+  displayNumber: number
+}
+
+export interface ListPrsRequest {
+  projectPath: string
+  status?: string
+  sourceBranch?: string
+  targetBranch?: string
+  priority?: number
+}
+
+export interface ListPrsResponse {
+  prs: PullRequest[]
+  totalCount: number
+}
+
+export interface UpdatePrRequest {
+  projectPath: string
+  prId: string
+  title?: string
+  description?: string
+  status?: string
+  sourceBranch?: string
+  targetBranch?: string
+  linkedIssues?: string[]
+  reviewers?: string[]
+  priority?: number
+  customFields?: Record<string, string>
+}
+
+export interface UpdatePrResponse {
+  success: boolean
+  error: string
+  pr: PullRequest
+  manifest?: Manifest
+}
+
+export interface DeletePrRequest {
+  projectPath: string
+  prId: string
+}
+
+export interface DeletePrResponse {
+  success: boolean
+  error: string
+  manifest?: Manifest
+}

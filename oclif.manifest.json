@@ -310,6 +310,240 @@
       "isESM": true,
       "relativePath": ["dist", "commands", "add", "asset.js"]
     },
+    "delete:asset": {
+      "aliases": [],
+      "args": {
+        "filename": {
+          "description": "Asset filename",
+          "name": "filename",
+          "required": true
+        }
+      },
+      "description": "Delete an asset",
+      "examples": [
+        "<%= config.bin %> delete asset screenshot.png --issue 1",
+        "<%= config.bin %> delete asset logo.svg --shared",
+        "<%= config.bin %> delete asset old-image.png --issue 1 --force"
+      ],
+      "flags": {
+        "issue": {
+          "char": "i",
+          "description": "Issue ID or display number",
+          "name": "issue",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "shared": {
+          "char": "s",
+          "description": "Delete a shared asset",
+          "name": "shared",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "force": {
+          "char": "f",
+          "description": "Skip confirmation prompt",
+          "name": "force",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "delete:asset",
+      "pluginAlias": "centy",
+      "pluginName": "centy",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": ["dist", "commands", "delete", "asset.js"]
+    },
+    "delete:doc": {
+      "aliases": [],
+      "args": {
+        "slug": {
+          "description": "Doc slug",
+          "name": "slug",
+          "required": true
+        }
+      },
+      "description": "Delete a documentation file",
+      "examples": [
+        "<%= config.bin %> delete doc getting-started",
+        "<%= config.bin %> delete doc api-reference --force"
+      ],
+      "flags": {
+        "force": {
+          "char": "f",
+          "description": "Skip confirmation prompt",
+          "name": "force",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "delete:doc",
+      "pluginAlias": "centy",
+      "pluginName": "centy",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": ["dist", "commands", "delete", "doc.js"]
+    },
+    "delete:issue": {
+      "aliases": [],
+      "args": {
+        "id": {
+          "description": "Issue ID (UUID) or display number",
+          "name": "id",
+          "required": true
+        }
+      },
+      "description": "Delete an issue",
+      "examples": [
+        "<%= config.bin %> delete issue 1",
+        "<%= config.bin %> delete issue abc123-uuid",
+        "<%= config.bin %> delete issue 1 --force"
+      ],
+      "flags": {
+        "force": {
+          "char": "f",
+          "description": "Skip confirmation prompt",
+          "name": "force",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "delete:issue",
+      "pluginAlias": "centy",
+      "pluginName": "centy",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": ["dist", "commands", "delete", "issue.js"]
+    },
+    "delete:pr": {
+      "aliases": [],
+      "args": {
+        "id": {
+          "description": "PR ID (UUID) or display number",
+          "name": "id",
+          "required": true
+        }
+      },
+      "description": "Delete a pull request",
+      "examples": [
+        "<%= config.bin %> delete pr 1",
+        "<%= config.bin %> delete pr abc123-uuid",
+        "<%= config.bin %> delete pr 1 --force"
+      ],
+      "flags": {
+        "force": {
+          "char": "f",
+          "description": "Skip confirmation prompt",
+          "name": "force",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "delete:pr",
+      "pluginAlias": "centy",
+      "pluginName": "centy",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": ["dist", "commands", "delete", "pr.js"]
+    },
+    "daemon:autostart": {
+      "aliases": [],
+      "args": {},
+      "description": "Configure daemon to start automatically on boot",
+      "examples": [
+        "<%= config.bin %> daemon autostart",
+        "<%= config.bin %> daemon autostart --enable",
+        "<%= config.bin %> daemon autostart --disable"
+      ],
+      "flags": {
+        "enable": {
+          "description": "Enable autostart on boot",
+          "exclusive": ["disable"],
+          "name": "enable",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "disable": {
+          "description": "Disable autostart on boot",
+          "exclusive": ["enable"],
+          "name": "disable",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "daemon:autostart",
+      "pluginAlias": "centy",
+      "pluginName": "centy",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": ["dist", "commands", "daemon", "autostart.js"]
+    },
+    "install:daemon": {
+      "aliases": [],
+      "args": {},
+      "description": "Download and install the centy daemon binary",
+      "examples": [
+        "<%= config.bin %> install daemon",
+        "<%= config.bin %> install daemon --version 0.1.0",
+        "<%= config.bin %> install daemon --force",
+        "<%= config.bin %> install daemon --skip-checksum"
+      ],
+      "flags": {
+        "version": {
+          "char": "v",
+          "description": "Specific version to install (default: latest)",
+          "name": "version",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "force": {
+          "char": "f",
+          "description": "Force reinstall even if already installed",
+          "name": "force",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "skip-checksum": {
+          "description": "Skip SHA256 checksum verification",
+          "name": "skip-checksum",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "install:daemon",
+      "pluginAlias": "centy",
+      "pluginName": "centy",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": ["dist", "commands", "install", "daemon.js"]
+    },
     "create:doc": {
       "aliases": [],
       "args": {},
@@ -420,49 +654,313 @@
       "isESM": true,
       "relativePath": ["dist", "commands", "create", "issue.js"]
     },
-    "install:daemon": {
+    "create:pr": {
       "aliases": [],
       "args": {},
-      "description": "Download and install the centy daemon binary",
+      "description": "Create a new pull request in the .centy folder",
       "examples": [
-        "<%= config.bin %> install daemon",
-        "<%= config.bin %> install daemon --version 0.1.0",
-        "<%= config.bin %> install daemon --force",
-        "<%= config.bin %> install daemon --skip-checksum"
+        "<%= config.bin %> create pr",
+        "<%= config.bin %> create pr --title \"Add feature\" --source feature-branch",
+        "<%= config.bin %> create pr -t \"Bug fix\" -s bugfix/123 --target main",
+        "<%= config.bin %> create pr -t \"Feature\" --issues 1,2 --reviewers alice,bob"
       ],
       "flags": {
-        "version": {
-          "char": "v",
-          "description": "Specific version to install (default: latest)",
-          "name": "version",
+        "title": {
+          "char": "t",
+          "description": "PR title",
+          "name": "title",
+          "required": true,
           "hasDynamicHelp": false,
           "multiple": false,
           "type": "option"
         },
-        "force": {
-          "char": "f",
-          "description": "Force reinstall even if already installed",
-          "name": "force",
-          "allowNo": false,
-          "type": "boolean"
+        "description": {
+          "char": "d",
+          "description": "PR description",
+          "name": "description",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
         },
-        "skip-checksum": {
-          "description": "Skip SHA256 checksum verification",
-          "name": "skip-checksum",
-          "allowNo": false,
-          "type": "boolean"
+        "source": {
+          "char": "s",
+          "description": "Source branch name (auto-detected if not provided)",
+          "name": "source",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "target": {
+          "description": "Target branch name (defaults to main)",
+          "name": "target",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "issues": {
+          "char": "i",
+          "description": "Linked issue IDs (comma-separated)",
+          "name": "issues",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "reviewers": {
+          "char": "r",
+          "description": "Reviewers (comma-separated)",
+          "name": "reviewers",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "priority": {
+          "char": "p",
+          "description": "Priority level (low/medium/high)",
+          "name": "priority",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": ["low", "medium", "high"],
+          "type": "option"
+        },
+        "status": {
+          "description": "Initial status (draft/open)",
+          "name": "status",
+          "default": "draft",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": ["draft", "open"],
+          "type": "option"
         }
       },
       "hasDynamicHelp": false,
       "hiddenAliases": [],
-      "id": "install:daemon",
+      "id": "create:pr",
       "pluginAlias": "centy",
       "pluginName": "centy",
       "pluginType": "core",
       "strict": true,
       "enableJsonFlag": false,
       "isESM": true,
-      "relativePath": ["dist", "commands", "install", "daemon.js"]
+      "relativePath": ["dist", "commands", "create", "pr.js"]
+    },
+    "get:asset": {
+      "aliases": [],
+      "args": {
+        "filename": {
+          "description": "Asset filename",
+          "name": "filename",
+          "required": true
+        }
+      },
+      "description": "Get an asset and save it to a file",
+      "examples": [
+        "<%= config.bin %> get asset screenshot.png --issue 1 --output ./screenshot.png",
+        "<%= config.bin %> get asset logo.svg --shared --output ./logo.svg"
+      ],
+      "flags": {
+        "issue": {
+          "char": "i",
+          "description": "Issue ID or display number",
+          "name": "issue",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "shared": {
+          "char": "s",
+          "description": "Get a shared asset",
+          "name": "shared",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "output": {
+          "char": "o",
+          "description": "Output file path (defaults to asset filename)",
+          "name": "output",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "get:asset",
+      "pluginAlias": "centy",
+      "pluginName": "centy",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": ["dist", "commands", "get", "asset.js"]
+    },
+    "get:doc": {
+      "aliases": [],
+      "args": {
+        "slug": {
+          "description": "Doc slug",
+          "name": "slug",
+          "required": true
+        }
+      },
+      "description": "Get a documentation file by slug",
+      "examples": [
+        "<%= config.bin %> get doc getting-started",
+        "<%= config.bin %> get doc api-reference --json"
+      ],
+      "flags": {
+        "json": {
+          "description": "Output as JSON",
+          "name": "json",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "get:doc",
+      "pluginAlias": "centy",
+      "pluginName": "centy",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": ["dist", "commands", "get", "doc.js"]
+    },
+    "get:issue": {
+      "aliases": [],
+      "args": {
+        "id": {
+          "description": "Issue ID (UUID) or display number",
+          "name": "id",
+          "required": true
+        }
+      },
+      "description": "Get a single issue by ID or display number",
+      "examples": [
+        "<%= config.bin %> get issue 1",
+        "<%= config.bin %> get issue abc123-uuid",
+        "<%= config.bin %> get issue 1 --json"
+      ],
+      "flags": {
+        "json": {
+          "description": "Output as JSON",
+          "name": "json",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "get:issue",
+      "pluginAlias": "centy",
+      "pluginName": "centy",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": ["dist", "commands", "get", "issue.js"]
+    },
+    "get:pr": {
+      "aliases": [],
+      "args": {
+        "id": {
+          "description": "PR ID (UUID) or display number",
+          "name": "id",
+          "required": true
+        }
+      },
+      "description": "Get a single pull request by ID or display number",
+      "examples": [
+        "<%= config.bin %> get pr 1",
+        "<%= config.bin %> get pr abc123-uuid",
+        "<%= config.bin %> get pr 1 --json"
+      ],
+      "flags": {
+        "json": {
+          "description": "Output as JSON",
+          "name": "json",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "get:pr",
+      "pluginAlias": "centy",
+      "pluginName": "centy",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": ["dist", "commands", "get", "pr.js"]
+    },
+    "get:project": {
+      "aliases": [],
+      "args": {
+        "path": {
+          "description": "Path to the project (defaults to current directory)",
+          "name": "path",
+          "required": false
+        }
+      },
+      "description": "Get info about a specific project",
+      "examples": [
+        "<%= config.bin %> get project",
+        "<%= config.bin %> get project /path/to/project",
+        "<%= config.bin %> get project --json"
+      ],
+      "flags": {
+        "json": {
+          "description": "Output as JSON",
+          "name": "json",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "get:project",
+      "pluginAlias": "centy",
+      "pluginName": "centy",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": ["dist", "commands", "get", "project.js"]
+    },
+    "project:favorite": {
+      "aliases": [],
+      "args": {
+        "path": {
+          "description": "Path to the project (defaults to current directory)",
+          "name": "path",
+          "required": false
+        }
+      },
+      "description": "Mark a project as favorite or unfavorite",
+      "examples": [
+        "<%= config.bin %> project favorite",
+        "<%= config.bin %> project favorite /path/to/project",
+        "<%= config.bin %> project favorite --off"
+      ],
+      "flags": {
+        "off": {
+          "description": "Remove from favorites",
+          "name": "off",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "project:favorite",
+      "pluginAlias": "centy",
+      "pluginName": "centy",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": ["dist", "commands", "project", "favorite.js"]
     },
     "list:assets": {
       "aliases": [],
@@ -618,141 +1116,47 @@
       "isESM": true,
       "relativePath": ["dist", "commands", "list", "projects.js"]
     },
-    "project:favorite": {
-      "aliases": [],
-      "args": {
-        "path": {
-          "description": "Path to the project (defaults to current directory)",
-          "name": "path",
-          "required": false
-        }
-      },
-      "description": "Mark a project as favorite or unfavorite",
-      "examples": [
-        "<%= config.bin %> project favorite",
-        "<%= config.bin %> project favorite /path/to/project",
-        "<%= config.bin %> project favorite --off"
-      ],
-      "flags": {
-        "off": {
-          "description": "Remove from favorites",
-          "name": "off",
-          "allowNo": false,
-          "type": "boolean"
-        }
-      },
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "project:favorite",
-      "pluginAlias": "centy",
-      "pluginName": "centy",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": false,
-      "isESM": true,
-      "relativePath": ["dist", "commands", "project", "favorite.js"]
-    },
-    "daemon:autostart": {
+    "list:prs": {
       "aliases": [],
       "args": {},
-      "description": "Configure daemon to start automatically on boot",
+      "description": "List all pull requests",
       "examples": [
-        "<%= config.bin %> daemon autostart",
-        "<%= config.bin %> daemon autostart --enable",
-        "<%= config.bin %> daemon autostart --disable"
+        "<%= config.bin %> list prs",
+        "<%= config.bin %> list prs --status open",
+        "<%= config.bin %> list prs --source feature-branch",
+        "<%= config.bin %> list prs --target main"
       ],
       "flags": {
-        "enable": {
-          "description": "Enable autostart on boot",
-          "exclusive": ["disable"],
-          "name": "enable",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "disable": {
-          "description": "Disable autostart on boot",
-          "exclusive": ["enable"],
-          "name": "disable",
-          "allowNo": false,
-          "type": "boolean"
-        }
-      },
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "daemon:autostart",
-      "pluginAlias": "centy",
-      "pluginName": "centy",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": false,
-      "isESM": true,
-      "relativePath": ["dist", "commands", "daemon", "autostart.js"]
-    },
-    "get:asset": {
-      "aliases": [],
-      "args": {
-        "filename": {
-          "description": "Asset filename",
-          "name": "filename",
-          "required": true
-        }
-      },
-      "description": "Get an asset and save it to a file",
-      "examples": [
-        "<%= config.bin %> get asset screenshot.png --issue 1 --output ./screenshot.png",
-        "<%= config.bin %> get asset logo.svg --shared --output ./logo.svg"
-      ],
-      "flags": {
-        "issue": {
-          "char": "i",
-          "description": "Issue ID or display number",
-          "name": "issue",
-          "hasDynamicHelp": false,
-          "multiple": false,
-          "type": "option"
-        },
-        "shared": {
+        "status": {
           "char": "s",
-          "description": "Get a shared asset",
-          "name": "shared",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "output": {
-          "char": "o",
-          "description": "Output file path (defaults to asset filename)",
-          "name": "output",
+          "description": "Filter by status (draft, open, merged, closed)",
+          "name": "status",
           "hasDynamicHelp": false,
           "multiple": false,
           "type": "option"
-        }
-      },
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "get:asset",
-      "pluginAlias": "centy",
-      "pluginName": "centy",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": false,
-      "isESM": true,
-      "relativePath": ["dist", "commands", "get", "asset.js"]
-    },
-    "get:doc": {
-      "aliases": [],
-      "args": {
-        "slug": {
-          "description": "Doc slug",
-          "name": "slug",
-          "required": true
-        }
-      },
-      "description": "Get a documentation file by slug",
-      "examples": [
-        "<%= config.bin %> get doc getting-started",
-        "<%= config.bin %> get doc api-reference --json"
-      ],
-      "flags": {
+        },
+        "source": {
+          "description": "Filter by source branch",
+          "name": "source",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "target": {
+          "description": "Filter by target branch",
+          "name": "target",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "priority": {
+          "char": "p",
+          "description": "Filter by priority level (1 = highest)",
+          "name": "priority",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
         "json": {
           "description": "Output as JSON",
           "name": "json",
@@ -762,82 +1166,14 @@
       },
       "hasDynamicHelp": false,
       "hiddenAliases": [],
-      "id": "get:doc",
+      "id": "list:prs",
       "pluginAlias": "centy",
       "pluginName": "centy",
       "pluginType": "core",
       "strict": true,
       "enableJsonFlag": false,
       "isESM": true,
-      "relativePath": ["dist", "commands", "get", "doc.js"]
-    },
-    "get:issue": {
-      "aliases": [],
-      "args": {
-        "id": {
-          "description": "Issue ID (UUID) or display number",
-          "name": "id",
-          "required": true
-        }
-      },
-      "description": "Get a single issue by ID or display number",
-      "examples": [
-        "<%= config.bin %> get issue 1",
-        "<%= config.bin %> get issue abc123-uuid",
-        "<%= config.bin %> get issue 1 --json"
-      ],
-      "flags": {
-        "json": {
-          "description": "Output as JSON",
-          "name": "json",
-          "allowNo": false,
-          "type": "boolean"
-        }
-      },
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "get:issue",
-      "pluginAlias": "centy",
-      "pluginName": "centy",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": false,
-      "isESM": true,
-      "relativePath": ["dist", "commands", "get", "issue.js"]
-    },
-    "get:project": {
-      "aliases": [],
-      "args": {
-        "path": {
-          "description": "Path to the project (defaults to current directory)",
-          "name": "path",
-          "required": false
-        }
-      },
-      "description": "Get info about a specific project",
-      "examples": [
-        "<%= config.bin %> get project",
-        "<%= config.bin %> get project /path/to/project",
-        "<%= config.bin %> get project --json"
-      ],
-      "flags": {
-        "json": {
-          "description": "Output as JSON",
-          "name": "json",
-          "allowNo": false,
-          "type": "boolean"
-        }
-      },
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "get:project",
-      "pluginAlias": "centy",
-      "pluginName": "centy",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": false,
-      "isESM": true,
-      "relativePath": ["dist", "commands", "get", "project.js"]
+      "relativePath": ["dist", "commands", "list", "prs.js"]
     },
     "register:project": {
       "aliases": [],
@@ -864,125 +1200,6 @@
       "enableJsonFlag": false,
       "isESM": true,
       "relativePath": ["dist", "commands", "register", "project.js"]
-    },
-    "delete:asset": {
-      "aliases": [],
-      "args": {
-        "filename": {
-          "description": "Asset filename",
-          "name": "filename",
-          "required": true
-        }
-      },
-      "description": "Delete an asset",
-      "examples": [
-        "<%= config.bin %> delete asset screenshot.png --issue 1",
-        "<%= config.bin %> delete asset logo.svg --shared",
-        "<%= config.bin %> delete asset old-image.png --issue 1 --force"
-      ],
-      "flags": {
-        "issue": {
-          "char": "i",
-          "description": "Issue ID or display number",
-          "name": "issue",
-          "hasDynamicHelp": false,
-          "multiple": false,
-          "type": "option"
-        },
-        "shared": {
-          "char": "s",
-          "description": "Delete a shared asset",
-          "name": "shared",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "force": {
-          "char": "f",
-          "description": "Skip confirmation prompt",
-          "name": "force",
-          "allowNo": false,
-          "type": "boolean"
-        }
-      },
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "delete:asset",
-      "pluginAlias": "centy",
-      "pluginName": "centy",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": false,
-      "isESM": true,
-      "relativePath": ["dist", "commands", "delete", "asset.js"]
-    },
-    "delete:doc": {
-      "aliases": [],
-      "args": {
-        "slug": {
-          "description": "Doc slug",
-          "name": "slug",
-          "required": true
-        }
-      },
-      "description": "Delete a documentation file",
-      "examples": [
-        "<%= config.bin %> delete doc getting-started",
-        "<%= config.bin %> delete doc api-reference --force"
-      ],
-      "flags": {
-        "force": {
-          "char": "f",
-          "description": "Skip confirmation prompt",
-          "name": "force",
-          "allowNo": false,
-          "type": "boolean"
-        }
-      },
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "delete:doc",
-      "pluginAlias": "centy",
-      "pluginName": "centy",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": false,
-      "isESM": true,
-      "relativePath": ["dist", "commands", "delete", "doc.js"]
-    },
-    "delete:issue": {
-      "aliases": [],
-      "args": {
-        "id": {
-          "description": "Issue ID (UUID) or display number",
-          "name": "id",
-          "required": true
-        }
-      },
-      "description": "Delete an issue",
-      "examples": [
-        "<%= config.bin %> delete issue 1",
-        "<%= config.bin %> delete issue abc123-uuid",
-        "<%= config.bin %> delete issue 1 --force"
-      ],
-      "flags": {
-        "force": {
-          "char": "f",
-          "description": "Skip confirmation prompt",
-          "name": "force",
-          "allowNo": false,
-          "type": "boolean"
-        }
-      },
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "delete:issue",
-      "pluginAlias": "centy",
-      "pluginName": "centy",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": false,
-      "isESM": true,
-      "relativePath": ["dist", "commands", "delete", "issue.js"]
     },
     "update:doc": {
       "aliases": [],
@@ -1095,6 +1312,99 @@
       "isESM": true,
       "relativePath": ["dist", "commands", "update", "issue.js"]
     },
+    "update:pr": {
+      "aliases": [],
+      "args": {
+        "id": {
+          "description": "PR ID (UUID) or display number",
+          "name": "id",
+          "required": true
+        }
+      },
+      "description": "Update an existing pull request",
+      "examples": [
+        "<%= config.bin %> update pr 1 --status open",
+        "<%= config.bin %> update pr 1 --title \"New title\"",
+        "<%= config.bin %> update pr 1 --status merged",
+        "<%= config.bin %> update pr abc123 --reviewers alice,bob"
+      ],
+      "flags": {
+        "title": {
+          "char": "t",
+          "description": "New title",
+          "name": "title",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "description": {
+          "char": "d",
+          "description": "New description",
+          "name": "description",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "status": {
+          "char": "s",
+          "description": "New status (draft, open, merged, closed)",
+          "name": "status",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": ["draft", "open", "merged", "closed"],
+          "type": "option"
+        },
+        "source": {
+          "description": "New source branch",
+          "name": "source",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "target": {
+          "description": "New target branch",
+          "name": "target",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "issues": {
+          "char": "i",
+          "description": "Linked issue IDs (comma-separated)",
+          "name": "issues",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "reviewers": {
+          "char": "r",
+          "description": "Reviewers (comma-separated)",
+          "name": "reviewers",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "priority": {
+          "char": "p",
+          "description": "New priority (low/medium/high)",
+          "name": "priority",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": ["low", "medium", "high"],
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "update:pr",
+      "pluginAlias": "centy",
+      "pluginName": "centy",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": ["dist", "commands", "update", "pr.js"]
+    },
     "untrack:project": {
       "aliases": [],
       "args": {
@@ -1131,5 +1441,5 @@
       "relativePath": ["dist", "commands", "untrack", "project.js"]
     }
   },
-  "version": "0.0.11"
+  "version": "0.0.13"
 }

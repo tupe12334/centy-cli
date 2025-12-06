@@ -37,8 +37,8 @@ export function App({ onExit }: AppProps) {
 
   // Global keyboard shortcuts
   useKeyboard((event: KeyEvent) => {
-    // Quit
-    if (event.name === 'q') {
+    // Quit with 'q' or Ctrl-C
+    if (event.name === 'q' || (event.ctrl && event.name === 'c')) {
       onExit()
       return
     }
@@ -62,7 +62,7 @@ export function App({ onExit }: AppProps) {
     { key: 'j/k', label: 'navigate' },
     { key: 'Enter', label: 'select' },
     { key: 'Tab', label: 'switch view' },
-    { key: 'q', label: 'quit' },
+    { key: 'q/^C', label: 'quit' },
   ]
 
   // View-specific shortcuts
@@ -151,7 +151,7 @@ function renderView(view: ViewId) {
             <text> Esc/Backspace - Go back</text>
             <text> </text>
             <text fg="cyan">Global</text>
-            <text> q - Quit</text>
+            <text> q or Ctrl-C - Quit</text>
             <text> </text>
             <text fg="cyan">Scrolling</text>
             <text> j/k - Scroll line by line</text>

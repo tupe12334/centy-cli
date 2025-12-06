@@ -350,6 +350,7 @@ export interface ProjectInfo {
 
 export interface ListProjectsRequest {
   includeStale?: boolean
+  includeUninitialized?: boolean
 }
 
 export interface ListProjectsResponse {

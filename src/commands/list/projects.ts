@@ -11,12 +11,17 @@ export default class ListProjects extends Command {
   static override examples = [
     '<%= config.bin %> list projects',
     '<%= config.bin %> list projects --include-stale',
+    '<%= config.bin %> list projects --include-uninitialized',
     '<%= config.bin %> list projects --json',
   ]
 
   static override flags = {
     'include-stale': Flags.boolean({
       description: 'Include projects where path no longer exists',
+      default: false,
+    }),
+    'include-uninitialized': Flags.boolean({
+      description: 'Include projects that are not initialized',
       default: false,
     }),
     json: Flags.boolean({
@@ -30,6 +35,7 @@ export default class ListProjects extends Command {
 
     const response = await daemonListProjects({
       includeStale: flags['include-stale'],
+      includeUninitialized: flags['include-uninitialized'],
     })
 
     if (flags.json) {

@@ -9,7 +9,10 @@ export function useProjects() {
     if (!state.daemonConnected) return
 
     dispatch({ type: 'SET_LOADING', loading: true })
-    const result = await daemonService.listProjects(true)
+    const result = await daemonService.listProjects({
+      includeStale: true,
+      includeUninitialized: false,
+    })
     dispatch({ type: 'SET_LOADING', loading: false })
 
     if (result.success && result.data) {

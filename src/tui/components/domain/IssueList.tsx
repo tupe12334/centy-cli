@@ -27,7 +27,13 @@ export function IssueList() {
   const { navigate } = useNavigation()
   const { state } = useAppState()
   const [selectedIndex, setSelectedIndex] = useState(0)
+  const [showAll, setShowAll] = useState(false)
   const scrollBoxRef = useRef<ScrollBoxRenderable>(null)
+
+  // Filter issues: hide closed by default unless showAll is true
+  const filteredIssues = showAll
+    ? issues
+    : issues.filter((issue: Issue) => issue.metadata.status !== 'closed')
 
   useEffect(() => {
     if (scrollBoxRef.current) {
@@ -50,15 +56,22 @@ export function IssueList() {
 
   useKeyboard((event: KeyEvent) => {
     if (event.name === 'j' || event.name === 'down') {
-      setSelectedIndex((prev: number) => Math.min(prev + 1, issues.length - 1))
+      setSelectedIndex((prev: number) =>
+        Math.min(prev + 1, filteredIssues.length - 1)
+      )
     } else if (event.name === 'k' || event.name === 'up') {
       setSelectedIndex((prev: number) => Math.max(prev - 1, 0))
     } else if (event.name === 'return') {
-      const issue = issues[selectedIndex]
+      const issue = filteredIssues[selectedIndex]
       if (issue) {
         selectIssue(issue.id)
         navigate('issue-detail', { issueId: issue.id })
       }
+    } else if (event.name === 'n') {
+      navigate('issue-create')
+    } else if (event.name === 'a') {
+      setShowAll(prev => !prev)
+      setSelectedIndex(0) // Reset selection when toggling filter
     }
   })
 
@@ -80,19 +93,38 @@ export function IssueList() {
     )
   }
 
-  if (issues.length === 0) {
+  if (filteredIssues.length === 0) {
+    const hasClosedIssues = issues.length > 0 && !showAll
     return (
       <MainPanel title={`Issues - ${projectName}`}>
-        <text fg="gray">No issues found.</text>
+        <text fg="gray">
+          {hasClosedIssues
+            ? 'No open issues. Press `a` to show all issues.'
+            : 'No issues found.'}
+        </text>
         <text fg="gray">Press `n` to create a new issue.</text>
       </MainPanel>
     )
   }
 
+  const closedCount = issues.filter(
+    (i: Issue) => i.metadata.status === 'closed'
+  ).length
+  const filterLabel = showAll
+    ? `Showing all (${closedCount} closed)`
+    : `Hiding ${closedCount} closed`
+
   return (
     <MainPanel title={`Issues - ${projectName}`}>
+      {closedCount > 0 && (
+        <box marginBottom={1}>
+          <text fg="gray">
+            {filterLabel} - press `a` to {showAll ? 'hide' : 'show'} closed
+          </text>
+        </box>
+      )}
       <scrollbox ref={scrollBoxRef} flexGrow={1} scrollY={true}>
-        {issues.map((issue: Issue, index: number) => {
+        {filteredIssues.map((issue: Issue, index: number) => {
           const isSelected = index === selectedIndex
           const priorityColor = getPriorityColor(issue.metadata.priority)
           const priorityLabel = getPriorityLabel(

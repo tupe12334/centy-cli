@@ -16,6 +16,8 @@ import { daemonSetProjectArchived } from '../../daemon/daemon-set-project-archiv
 import { daemonUntrackProject } from '../../daemon/daemon-untrack-project.js'
 import { daemonGetDoc } from '../../daemon/daemon-get-doc.js'
 import { daemonGetIssue } from '../../daemon/daemon-get-issue.js'
+import { daemonCreateIssue } from '../../daemon/daemon-create-issue.js'
+import { daemonCreateDoc } from '../../daemon/daemon-create-doc.js'
 import type {
   ProjectInfo,
   Issue,
@@ -25,6 +27,8 @@ import type {
   ShutdownResponse,
   RestartResponse,
   Asset,
+  CreateIssueResponse,
+  CreateDocResponse,
 } from '../../daemon/types.js'
 
 export interface DaemonServiceResult<T> {
@@ -242,6 +246,64 @@ export class DaemonService {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Failed to get issue',
+      }
+    }
+  }
+
+  async createIssue(
+    projectPath: string,
+    options: {
+      title: string
+      description: string
+      priority?: number
+      status?: string
+    }
+  ): Promise<DaemonServiceResult<CreateIssueResponse>> {
+    try {
+      const response = await daemonCreateIssue({
+        projectPath,
+        title: options.title,
+        description: options.description,
+        priority: options.priority ?? 0,
+        status: options.status ?? 'open',
+        customFields: {},
+      })
+      if (!response.success) {
+        return { success: false, error: response.error }
+      }
+      return { success: true, data: response }
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error instanceof Error ? error.message : 'Failed to create issue',
+      }
+    }
+  }
+
+  async createDoc(
+    projectPath: string,
+    options: {
+      title: string
+      content: string
+      slug?: string
+    }
+  ): Promise<DaemonServiceResult<CreateDocResponse>> {
+    try {
+      const response = await daemonCreateDoc({
+        projectPath,
+        title: options.title,
+        content: options.content,
+        slug: options.slug,
+      })
+      if (!response.success) {
+        return { success: false, error: response.error }
+      }
+      return { success: true, data: response }
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to create doc',
       }
     }
   }

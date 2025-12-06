@@ -7,8 +7,10 @@ import { StatusBar } from './components/layout/StatusBar.js'
 import { ProjectList } from './components/domain/ProjectList.js'
 import { IssueList } from './components/domain/IssueList.js'
 import { IssueDetail } from './components/domain/IssueDetail.js'
+import { IssueCreate } from './components/domain/IssueCreate.js'
 import { DocList } from './components/domain/DocList.js'
 import { DocDetail } from './components/domain/DocDetail.js'
+import { DocCreate } from './components/domain/DocCreate.js'
 import { AssetList } from './components/domain/AssetList.js'
 import { ConfigPanel } from './components/domain/ConfigPanel.js'
 import { DaemonPanel } from './components/domain/DaemonPanel.js'
@@ -35,19 +37,39 @@ export function App({ onExit }: AppProps) {
     [state.selectedProjectPath]
   )
 
+  // Views that handle their own keyboard input (forms)
+  const isFormView =
+    currentView === 'issue-create' || currentView === 'doc-create'
+
   // Global keyboard shortcuts
   useKeyboard((event: KeyEvent) => {
-    // Quit with 'q' or Ctrl-C
-    if (event.name === 'q' || (event.ctrl && event.name === 'c')) {
+    // Quit with 'q' or Ctrl-C (but not in form views where 'q' is valid input)
+    if (event.name === 'q' && !isFormView) {
+      onExit()
+      return
+    }
+    if (event.ctrl && event.name === 'c') {
       onExit()
       return
     }
 
-    // Navigate sidebar with Tab or number keys
-    if (event.name === 'tab') {
+    // Skip sidebar navigation in form views - let forms handle Tab/arrows
+    if (isFormView) {
+      return
+    }
+
+    // Navigate sidebar with Tab, arrow keys, or number keys
+    if (event.name === 'tab' || event.name === 'right') {
       const nextIndex = (sidebarIndex + 1) % visibleViews.length
       selectSidebarItem(nextIndex)
       navigate(visibleViews[nextIndex])
+    }
+
+    if (event.name === 'left') {
+      const prevIndex =
+        sidebarIndex > 0 ? sidebarIndex - 1 : visibleViews.length - 1
+      selectSidebarItem(prevIndex)
+      navigate(visibleViews[prevIndex])
     }
 
     // Number keys for quick navigation
@@ -61,7 +83,7 @@ export function App({ onExit }: AppProps) {
   const baseShortcuts = [
     { key: 'j/k', label: 'navigate' },
     { key: 'Enter', label: 'select' },
-    { key: 'Tab', label: 'switch view' },
+    { key: '←/→', label: 'switch view' },
     { key: 'q/^C', label: 'quit' },
   ]
 
@@ -72,18 +94,26 @@ export function App({ onExit }: AppProps) {
       { key: 'a', label: 'archive' },
       { key: 'x', label: 'remove' },
     ],
-    issues: [],
+    issues: [{ key: 'n', label: 'new' }],
     'issue-detail': [
       { key: 'Esc', label: 'back' },
       { key: 'd/u', label: 'scroll' },
     ],
-    'issue-create': [],
-    docs: [],
+    'issue-create': [
+      { key: 'Tab', label: 'next field' },
+      { key: '^S', label: 'save' },
+      { key: 'Esc', label: 'cancel' },
+    ],
+    docs: [{ key: 'n', label: 'new' }],
     'doc-detail': [
       { key: 'Esc', label: 'back' },
       { key: 'd/u', label: 'scroll' },
     ],
-    'doc-create': [],
+    'doc-create': [
+      { key: 'Tab', label: 'next field' },
+      { key: '^S', label: 'save' },
+      { key: 'Esc', label: 'cancel' },
+    ],
     assets: [],
     config: [],
     daemon: [
@@ -129,10 +159,14 @@ function renderView(view: ViewId) {
       return <IssueList />
     case 'issue-detail':
       return <IssueDetail />
+    case 'issue-create':
+      return <IssueCreate />
     case 'docs':
       return <DocList />
     case 'doc-detail':
       return <DocDetail />
+    case 'doc-create':
+      return <DocCreate />
     case 'assets':
       return <AssetList />
     case 'config':
@@ -150,7 +184,7 @@ function renderView(view: ViewId) {
             <text fg="cyan">Navigation</text>
             <text> j/k or Up/Down - Move selection</text>
             <text> Enter - Select/open item</text>
-            <text> Tab - Cycle through views</text>
+            <text> ←/→ or Tab - Cycle through views</text>
             <text> 1-6 - Quick jump to view</text>
             <text> Esc/Backspace - Go back</text>
             <text> </text>

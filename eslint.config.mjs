@@ -65,7 +65,6 @@ export default [
     rules: {
       'ddd/require-spec-file': 'off',
       'no-restricted-syntax': 'off',
-      'single-export/single-export': 'off',
       'import/order': 'off',
       'max-lines': 'off',
       'max-lines-per-function': 'off',

@@ -105,7 +105,7 @@ export function IssueList() {
               <text bg={isSelected ? 'gray' : undefined}>
                 {isSelected ? <b>{'>'}</b> : ' '}
               </text>
-              <text fg="cyan">#{issue.displayNumber}</text>
+              <text fg="cyan">#{String(issue.displayNumber)}</text>
               <text> </text>
               <text fg={priorityColor}>[{priorityLabel}]</text>
               <text> </text>

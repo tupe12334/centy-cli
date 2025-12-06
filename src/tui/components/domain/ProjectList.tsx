@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from 'react'
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { useKeyboard } from '@opentui/react'
 import type { KeyEvent, ScrollBoxRenderable } from '@opentui/core'
 import { MainPanel } from '../layout/MainPanel.js'
@@ -35,7 +35,7 @@ function ProjectItem({ project, isSelected }: ProjectItemProps) {
       </box>
       <box flexDirection="row" paddingLeft={5}>
         <text fg="gray">
-          {project.issueCount} issues, {project.docCount} docs
+          {String(project.issueCount)} issues, {String(project.docCount)} docs
         </text>
         {!project.initialized && <text fg="yellow"> (not initialized)</text>}
       </box>
@@ -96,54 +96,68 @@ export function ProjectList() {
     }
   }, [selectedIndex])
 
-  useKeyboard((event: KeyEvent) => {
-    // Handle confirmation dialog
-    if (confirmUntrack) {
-      if (event.name === 'y') {
-        untrackProject(confirmUntrack)
-        setConfirmUntrack(null)
-      } else if (event.name === 'n' || event.name === 'escape') {
-        setConfirmUntrack(null)
+  const handleKeyboard = useCallback(
+    (event: KeyEvent) => {
+      // Handle confirmation dialog
+      if (confirmUntrack) {
+        if (event.name === 'y') {
+          untrackProject(confirmUntrack)
+          setConfirmUntrack(null)
+        } else if (event.name === 'n' || event.name === 'escape') {
+          setConfirmUntrack(null)
+        }
+        return
       }
-      return
-    }
 
-    if (event.name === 'j' || event.name === 'down') {
-      setSelectedIndex((prev: number) => {
-        const newIndex = Math.min(prev + 1, sortedProjects.length - 1)
-        setSelectedPath(sortedProjects[newIndex]?.path ?? null)
-        return newIndex
-      })
-    } else if (event.name === 'k' || event.name === 'up') {
-      setSelectedIndex((prev: number) => {
-        const newIndex = Math.max(prev - 1, 0)
-        setSelectedPath(sortedProjects[newIndex]?.path ?? null)
-        return newIndex
-      })
-    } else if (event.name === 'return') {
-      const project = sortedProjects[selectedIndex]
-      if (project) {
-        selectProject(project.path)
-        navigate('issues')
+      if (event.name === 'j' || event.name === 'down') {
+        setSelectedIndex((prev: number) => {
+          const newIndex = Math.min(prev + 1, sortedProjects.length - 1)
+          setSelectedPath(sortedProjects[newIndex]?.path ?? null)
+          return newIndex
+        })
+      } else if (event.name === 'k' || event.name === 'up') {
+        setSelectedIndex((prev: number) => {
+          const newIndex = Math.max(prev - 1, 0)
+          setSelectedPath(sortedProjects[newIndex]?.path ?? null)
+          return newIndex
+        })
+      } else if (event.name === 'return') {
+        const project = sortedProjects[selectedIndex]
+        if (project) {
+          selectProject(project.path)
+          navigate('issues')
+        }
+      } else if (event.name === 'f') {
+        const project = sortedProjects[selectedIndex]
+        if (project) {
+          setSelectedPath(project.path)
+          toggleFavorite(project.path, !project.isFavorite)
+        }
+      } else if (event.name === 'a') {
+        const project = sortedProjects[selectedIndex]
+        if (project) {
+          toggleArchive(project.path, true)
+        }
+      } else if (event.name === 'x') {
+        const project = sortedProjects[selectedIndex]
+        if (project) {
+          setConfirmUntrack(project.path)
+        }
       }
-    } else if (event.name === 'f') {
-      const project = sortedProjects[selectedIndex]
-      if (project) {
-        setSelectedPath(project.path)
-        toggleFavorite(project.path, !project.isFavorite)
-      }
-    } else if (event.name === 'a') {
-      const project = sortedProjects[selectedIndex]
-      if (project) {
-        toggleArchive(project.path, true)
-      }
-    } else if (event.name === 'x') {
-      const project = sortedProjects[selectedIndex]
-      if (project) {
-        setConfirmUntrack(project.path)
-      }
-    }
-  })
+    },
+    [
+      confirmUntrack,
+      untrackProject,
+      sortedProjects,
+      selectedIndex,
+      selectProject,
+      navigate,
+      toggleFavorite,
+      toggleArchive,
+    ]
+  )
+
+  useKeyboard(handleKeyboard)
 
   if (isLoading) {
     return (
@@ -184,18 +198,16 @@ export function ProjectList() {
           <text fg="gray">
             (This only removes it from the list, not from disk)
           </text>
-          <box flexDirection="row" gap={2} paddingTop={1}>
-            <text>
-              Press{' '}
-              <text fg="green">
-                <b>y</b>
-              </text>{' '}
-              to confirm,{' '}
-              <text fg="red">
-                <b>n</b>
-              </text>{' '}
-              to cancel
+          <box flexDirection="row" paddingTop={1}>
+            <text>Press </text>
+            <text fg="green">
+              <b>y</b>
             </text>
+            <text> to confirm, </text>
+            <text fg="red">
+              <b>n</b>
+            </text>
+            <text> to cancel</text>
           </box>
         </box>
       )}

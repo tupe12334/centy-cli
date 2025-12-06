@@ -84,8 +84,8 @@ function ConfigContent({ config }: ConfigContentProps) {
       {/* Priority */}
       <ConfigSection title="Priority Levels">
         <text>
-          {config.priorityLevels} levels (1 = highest, {config.priorityLevels} =
-          lowest)
+          {String(config.priorityLevels)} levels (1 = highest,{' '}
+          {String(config.priorityLevels)} = lowest)
         </text>
       </ConfigSection>
 

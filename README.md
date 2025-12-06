@@ -56,7 +56,7 @@ centy
 
 Running `centy` without any arguments opens a full-screen interactive terminal UI:
 
-![Centy TUI](assets/tui.png)
+![Centy TUI](https://raw.githubusercontent.com/centy-io/centy-cli/main/assets/tui.png)
 
 ### TUI Keyboard Shortcuts
 

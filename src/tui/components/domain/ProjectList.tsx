@@ -143,6 +143,8 @@ export function ProjectList() {
         if (project) {
           setConfirmUntrack(project.path)
         }
+      } else if (event.name === 'n') {
+        navigate('project-create')
       }
     },
     [
@@ -171,7 +173,7 @@ export function ProjectList() {
     return (
       <MainPanel title="Projects">
         <text fg="gray">No projects found.</text>
-        <text fg="gray">Use `centy register project` to add a project.</text>
+        <text fg="gray">Press `n` to add a project.</text>
       </MainPanel>
     )
   }

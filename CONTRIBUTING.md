@@ -184,6 +184,27 @@ When requesting features, please include:
 - **Alternatives**: What alternatives have you considered?
 - **Examples**: Examples of similar features elsewhere
 
+## Publishing (Maintainers Only)
+
+To publish a new version:
+
+1. **Update the version** in `package.json`:
+
+   ```bash
+   # For patch release (0.0.14 -> 0.0.15)
+   # Edit package.json and update the version field
+   ```
+
+2. **Commit and push** to main:
+
+   ```bash
+   git add package.json
+   git commit -m "chore(release): bump version to X.X.X"
+   git push
+   ```
+
+3. **CI/CD handles the rest**: The GitHub Actions workflow automatically publishes to npm when a version change is detected on main.
+
 ## Questions?
 
 - Check existing issues and discussions

@@ -141,6 +141,12 @@ export function IssueDetail() {
             <text fg={priorityColor}>{priorityLabel}</text>
           </box>
 
+          {/* UUID */}
+          <box flexDirection="row" marginBottom={1}>
+            <text fg="gray">UUID: </text>
+            <text fg="gray">{issue.id}</text>
+          </box>
+
           {/* Dates */}
           <IssueSection title="Timeline">
             <box flexDirection="row">

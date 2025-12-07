@@ -1,13 +1,62 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { useKeyboard } from '@opentui/react'
 import type { KeyEvent, ScrollBoxRenderable } from '@opentui/core'
 import { MainPanel } from '../layout/MainPanel.js'
 import { useIssues } from '../../hooks/useIssues.js'
 import { useNavigation } from '../../hooks/useNavigation.js'
-import { useAppState } from '../../state/app-state.js'
+import {
+  useAppState,
+  SORT_FIELD_LABELS,
+  type IssueSortField,
+} from '../../state/app-state.js'
 import type { Issue } from '../../../daemon/types.js'
+import { saveIssueSortConfig } from '../../utils/local-config.js'
 
 const ITEM_HEIGHT = 1
+
+const SORT_FIELDS: IssueSortField[] = [
+  'priority',
+  'displayNumber',
+  'createdAt',
+  'updatedAt',
+  'status',
+]
+
+function sortIssues(
+  issues: Issue[],
+  field: IssueSortField,
+  direction: 'asc' | 'desc'
+): Issue[] {
+  const sorted = [...issues].sort((a, b) => {
+    let comparison = 0
+
+    switch (field) {
+      case 'priority':
+        comparison = a.metadata.priority - b.metadata.priority
+        break
+      case 'displayNumber':
+        comparison = a.displayNumber - b.displayNumber
+        break
+      case 'createdAt':
+        comparison =
+          new Date(a.metadata.createdAt).getTime() -
+          new Date(b.metadata.createdAt).getTime()
+        break
+      case 'updatedAt':
+        comparison =
+          new Date(a.metadata.updatedAt).getTime() -
+          new Date(b.metadata.updatedAt).getTime()
+        break
+      case 'status':
+        comparison = a.metadata.status.localeCompare(b.metadata.status)
+        break
+    }
+
+    return direction === 'asc' ? comparison : -comparison
+  })
+
+  return sorted
+}
 
 function getPriorityColor(priority: number): string {
   if (priority === 1) return 'red'
@@ -25,15 +74,44 @@ function getPriorityLabel(priority: number, label?: string): string {
 export function IssueList() {
   const { issues, isLoading, selectIssue } = useIssues()
   const { navigate } = useNavigation()
-  const { state } = useAppState()
+  const { state, dispatch } = useAppState()
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [showAll, setShowAll] = useState(false)
   const scrollBoxRef = useRef<ScrollBoxRenderable>(null)
+
+  const { issueSort } = state
 
   // Filter issues: hide closed by default unless showAll is true
   const filteredIssues = showAll
     ? issues
     : issues.filter((issue: Issue) => issue.metadata.status !== 'closed')
+
+  // Sort filtered issues based on current sort configuration
+  const sortedIssues = useMemo(
+    () => sortIssues(filteredIssues, issueSort.field, issueSort.direction),
+    [filteredIssues, issueSort.field, issueSort.direction]
+  )
+
+  // Cycle to next sort field
+  const cycleSortField = () => {
+    const currentIndex = SORT_FIELDS.indexOf(issueSort.field)
+    const nextIndex = (currentIndex + 1) % SORT_FIELDS.length
+    const newSort = { ...issueSort, field: SORT_FIELDS[nextIndex] }
+    dispatch({ type: 'SET_ISSUE_SORT', sort: newSort })
+    saveIssueSortConfig(newSort)
+    setSelectedIndex(0) // Reset selection when changing sort
+  }
+
+  // Toggle sort direction
+  const toggleSortDirection = () => {
+    const newSort = {
+      ...issueSort,
+      direction: issueSort.direction === 'asc' ? 'desc' : 'asc',
+    } as const
+    dispatch({ type: 'SET_ISSUE_SORT', sort: newSort })
+    saveIssueSortConfig(newSort)
+    setSelectedIndex(0) // Reset selection when changing sort
+  }
 
   useEffect(() => {
     if (scrollBoxRef.current) {
@@ -57,12 +135,12 @@ export function IssueList() {
   useKeyboard((event: KeyEvent) => {
     if (event.name === 'j' || event.name === 'down') {
       setSelectedIndex((prev: number) =>
-        Math.min(prev + 1, filteredIssues.length - 1)
+        Math.min(prev + 1, sortedIssues.length - 1)
       )
     } else if (event.name === 'k' || event.name === 'up') {
       setSelectedIndex((prev: number) => Math.max(prev - 1, 0))
     } else if (event.name === 'return') {
-      const issue = filteredIssues[selectedIndex]
+      const issue = sortedIssues[selectedIndex]
       if (issue) {
         selectIssue(issue.id)
         navigate('issue-detail', { issueId: issue.id })
@@ -72,6 +150,10 @@ export function IssueList() {
     } else if (event.name === 'a') {
       setShowAll(prev => !prev)
       setSelectedIndex(0) // Reset selection when toggling filter
+    } else if (event.name === 's') {
+      cycleSortField() // Cycle through sort fields
+    } else if (event.name === 'S') {
+      toggleSortDirection() // Toggle sort direction
     }
   })
 
@@ -93,7 +175,7 @@ export function IssueList() {
     )
   }
 
-  if (filteredIssues.length === 0) {
+  if (sortedIssues.length === 0) {
     const hasClosedIssues = issues.length > 0 && !showAll
     return (
       <MainPanel title={`Issues - ${projectName}`}>
@@ -110,21 +192,30 @@ export function IssueList() {
   const closedCount = issues.filter(
     (i: Issue) => i.metadata.status === 'closed'
   ).length
-  const filterLabel = showAll
-    ? `Showing all (${closedCount} closed)`
-    : `Hiding ${closedCount} closed`
+
+  const sortLabel = `Sort: ${SORT_FIELD_LABELS[issueSort.field]} ${issueSort.direction === 'asc' ? '↑' : '↓'}`
+  const filterLabel =
+    closedCount > 0
+      ? showAll
+        ? `(${closedCount} closed)`
+        : `(hiding ${closedCount} closed)`
+      : null
 
   return (
     <MainPanel title={`Issues - ${projectName}`}>
-      {closedCount > 0 && (
-        <box marginBottom={1}>
-          <text fg="gray">
-            {filterLabel} - press `a` to {showAll ? 'hide' : 'show'} closed
-          </text>
-        </box>
-      )}
+      <box marginBottom={1} flexDirection="row">
+        <text fg="cyan">{sortLabel}</text>
+        <text fg="gray"> [s]cycle [S]dir</text>
+        {filterLabel && (
+          <>
+            <text fg="gray"> | </text>
+            <text fg="gray">{filterLabel}</text>
+            <text fg="gray"> [a]toggle</text>
+          </>
+        )}
+      </box>
       <scrollbox ref={scrollBoxRef} flexGrow={1} scrollY={true}>
-        {filteredIssues.map((issue: Issue, index: number) => {
+        {sortedIssues.map((issue: Issue, index: number) => {
           const isSelected = index === selectedIndex
           const priorityColor = getPriorityColor(issue.metadata.priority)
           const priorityLabel = getPriorityLabel(

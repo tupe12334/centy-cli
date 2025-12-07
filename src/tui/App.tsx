@@ -8,6 +8,7 @@ import { ProjectList } from './components/domain/ProjectList.js'
 import { IssueList } from './components/domain/IssueList.js'
 import { IssueDetail } from './components/domain/IssueDetail.js'
 import { IssueCreate } from './components/domain/IssueCreate.js'
+import { IssueEdit } from './components/domain/IssueEdit.js'
 import { DocList } from './components/domain/DocList.js'
 import { DocDetail } from './components/domain/DocDetail.js'
 import { DocCreate } from './components/domain/DocCreate.js'
@@ -18,6 +19,7 @@ import { DaemonPanel } from './components/domain/DaemonPanel.js'
 import { MainPanel } from './components/layout/MainPanel.js'
 import { useNavigation } from './hooks/useNavigation.js'
 import { useDaemonConnection } from './hooks/useDaemonConnection.js'
+import { useAutoSelectProject } from './hooks/useAutoSelectProject.js'
 import { useAppState } from './state/app-state.js'
 import { getVisibleSidebarViews } from './types/views.js'
 import type { ViewId } from './types/views.js'
@@ -32,6 +34,9 @@ export function App({ onExit }: AppProps) {
     useNavigation()
   const { state } = useAppState()
 
+  // Auto-select project if current directory has .centy folder
+  useAutoSelectProject()
+
   // Get visible sidebar views based on project selection
   const visibleViews = useMemo(
     () => getVisibleSidebarViews(!!state.selectedProjectPath),
@@ -41,6 +46,7 @@ export function App({ onExit }: AppProps) {
   // Views that handle their own keyboard input (forms)
   const isFormView =
     currentView === 'issue-create' ||
+    currentView === 'issue-edit' ||
     currentView === 'doc-create' ||
     currentView === 'project-create'
 
@@ -104,10 +110,16 @@ export function App({ onExit }: AppProps) {
     ],
     issues: [{ key: 'n', label: 'new' }],
     'issue-detail': [
+      { key: 'e', label: 'edit' },
       { key: 'Esc', label: 'back' },
       { key: 'd/u', label: 'scroll' },
     ],
     'issue-create': [
+      { key: 'Tab', label: 'next field' },
+      { key: '^S', label: 'save' },
+      { key: 'Esc', label: 'cancel' },
+    ],
+    'issue-edit': [
       { key: 'Tab', label: 'next field' },
       { key: '^S', label: 'save' },
       { key: 'Esc', label: 'cancel' },
@@ -171,6 +183,8 @@ function renderView(view: ViewId) {
       return <IssueDetail />
     case 'issue-create':
       return <IssueCreate />
+    case 'issue-edit':
+      return <IssueEdit />
     case 'docs':
       return <DocList />
     case 'doc-detail':

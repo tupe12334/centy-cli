@@ -17,6 +17,7 @@ import { daemonUntrackProject } from '../../daemon/daemon-untrack-project.js'
 import { daemonGetDoc } from '../../daemon/daemon-get-doc.js'
 import { daemonGetIssue } from '../../daemon/daemon-get-issue.js'
 import { daemonCreateIssue } from '../../daemon/daemon-create-issue.js'
+import { daemonUpdateIssue } from '../../daemon/daemon-update-issue.js'
 import { daemonCreateDoc } from '../../daemon/daemon-create-doc.js'
 import { daemonRegisterProject } from '../../daemon/daemon-register-project.js'
 import { daemonInit } from '../../daemon/daemon-init.js'
@@ -31,6 +32,7 @@ import type {
   Asset,
   CreateIssueResponse,
   CreateDocResponse,
+  UpdateIssueResponse,
 } from '../../daemon/types.js'
 
 export interface DaemonServiceResult<T> {
@@ -279,6 +281,40 @@ export class DaemonService {
         success: false,
         error:
           error instanceof Error ? error.message : 'Failed to create issue',
+      }
+    }
+  }
+
+  async updateIssue(
+    projectPath: string,
+    issueId: string,
+    options: {
+      title?: string
+      description?: string
+      priority?: number
+      status?: string
+      customFields?: Record<string, string>
+    }
+  ): Promise<DaemonServiceResult<UpdateIssueResponse>> {
+    try {
+      const response = await daemonUpdateIssue({
+        projectPath,
+        issueId,
+        title: options.title,
+        description: options.description,
+        priority: options.priority,
+        status: options.status,
+        customFields: options.customFields,
+      })
+      if (!response.success) {
+        return { success: false, error: response.error }
+      }
+      return { success: true, data: response }
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error instanceof Error ? error.message : 'Failed to update issue',
       }
     }
   }

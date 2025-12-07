@@ -8,6 +8,7 @@ export type ViewId =
   | 'issues'
   | 'issue-detail'
   | 'issue-create'
+  | 'issue-edit'
   | 'docs'
   | 'doc-detail'
   | 'doc-create'
@@ -27,6 +28,7 @@ export const VIEW_LABELS: Record<ViewId, string> = {
   issues: 'Issues',
   'issue-detail': 'Issue Detail',
   'issue-create': 'New Issue',
+  'issue-edit': 'Edit Issue',
   docs: 'Docs',
   'doc-detail': 'Doc Detail',
   'doc-create': 'New Doc',

@@ -47,7 +47,7 @@ function IssueSection({ title, children }: IssueSectionProps) {
 }
 
 export function IssueDetail() {
-  const { viewParams, goBack } = useNavigation()
+  const { viewParams, goBack, navigate } = useNavigation()
   const { state, dispatch } = useAppState()
   const [issue, setIssue] = useState<Issue | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -85,6 +85,12 @@ export function IssueDetail() {
   useKeyboard((event: KeyEvent) => {
     if (event.name === 'escape' || event.name === 'backspace') {
       goBack()
+    } else if (event.name === 'e') {
+      // Edit issue
+      const issueId = viewParams.issueId || state.selectedIssueId
+      if (issueId) {
+        navigate('issue-edit', { issueId })
+      }
     } else if (event.name === 'j' || event.name === 'down') {
       if (scrollBoxRef.current) {
         scrollBoxRef.current.scrollBy(1)

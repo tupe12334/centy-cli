@@ -57,7 +57,8 @@ export function ProjectCreate() {
     } else if (event.name === 'space') {
       setPath(prev => prev + ' ')
     } else if (event.name.length === 1 && !event.ctrl && !event.meta) {
-      setPath(prev => prev + event.name)
+      const char = event.shift ? event.name.toUpperCase() : event.name
+      setPath(prev => prev + char)
     }
   })
 

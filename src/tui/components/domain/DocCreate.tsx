@@ -104,10 +104,11 @@ export function DocCreate() {
           setContent(prev => prev + ' ')
         }
       } else if (event.name.length === 1 && !event.ctrl && !event.meta) {
+        const char = event.shift ? event.name.toUpperCase() : event.name
         if (activeField === 'title') {
-          setTitle(prev => prev + event.name)
+          setTitle(prev => prev + char)
         } else {
-          setContent(prev => prev + event.name)
+          setContent(prev => prev + char)
         }
       }
     }

@@ -151,10 +151,11 @@ export function IssueCreate() {
           setDescription(prev => prev + ' ')
         }
       } else if (event.name.length === 1 && !event.ctrl && !event.meta) {
+        const char = event.shift ? event.name.toUpperCase() : event.name
         if (activeField === 'title') {
-          setTitle(prev => prev + event.name)
+          setTitle(prev => prev + char)
         } else {
-          setDescription(prev => prev + event.name)
+          setDescription(prev => prev + char)
         }
       }
     }

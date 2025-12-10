@@ -40,8 +40,11 @@ export default class GetIssue extends Command {
     }
 
     // Try to parse as display number first
-    const displayNumber = Number.parseInt(args.id, 10)
-    const isDisplayNumber = !Number.isNaN(displayNumber) && displayNumber > 0
+    // Only treat as display number if the entire string is digits (not UUIDs like "3981508f-...")
+    const isAllDigits = /^\d+$/.test(args.id)
+    const displayNumber = isAllDigits ? Number.parseInt(args.id, 10) : NaN
+    const isDisplayNumber =
+      isAllDigits && !Number.isNaN(displayNumber) && displayNumber > 0
 
     const issue = isDisplayNumber
       ? await daemonGetIssueByDisplayNumber({

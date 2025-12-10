@@ -4,6 +4,7 @@ import type { KeyEvent, ScrollBoxRenderable } from '@opentui/core'
 import { MainPanel } from '../layout/MainPanel.js'
 import { useNavigation } from '../../hooks/useNavigation.js'
 import { useAppState } from '../../state/app-state.js'
+import { useClipboard } from '../../hooks/useClipboard.js'
 import { daemonService } from '../../services/daemon-service.js'
 import type { PullRequest } from '../../../daemon/types.js'
 
@@ -56,6 +57,7 @@ function PRSection({ title, children }: PRSectionProps) {
 export function PRDetail() {
   const { viewParams, goBack, navigate } = useNavigation()
   const { state, dispatch } = useAppState()
+  const { copy } = useClipboard()
   const [pr, setPr] = useState<PullRequest | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const scrollBoxRef = useRef<ScrollBoxRenderable>(null)
@@ -111,6 +113,15 @@ export function PRDetail() {
       if (scrollBoxRef.current) {
         scrollBoxRef.current.scrollBy(-10)
       }
+    } else if (event.name === 'y' && !event.shift && !event.ctrl && pr) {
+      // Copy title
+      copy(`PR #${pr.displayNumber} ${pr.title}`, 'title')
+    } else if (event.name === 'y' && event.shift && !event.ctrl && pr) {
+      // Copy UUID
+      copy(pr.id, 'UUID')
+    } else if (event.name === 'y' && event.ctrl && pr) {
+      // Copy description
+      copy(pr.description || '', 'description')
     }
   })
 

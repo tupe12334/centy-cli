@@ -5,6 +5,7 @@ import { MainPanel } from '../layout/MainPanel.js'
 import { useDocs } from '../../hooks/useDocs.js'
 import { useNavigation } from '../../hooks/useNavigation.js'
 import { useAppState } from '../../state/app-state.js'
+import { useClipboard } from '../../hooks/useClipboard.js'
 import type { Doc } from '../../../daemon/types.js'
 
 const ITEM_HEIGHT = 2
@@ -42,6 +43,7 @@ export function DocList() {
   const { docs, isLoading, selectDoc } = useDocs()
   const { navigate } = useNavigation()
   const { state } = useAppState()
+  const { copy } = useClipboard()
   const [selectedIndex, setSelectedIndex] = useState(0)
   const scrollBoxRef = useRef<ScrollBoxRenderable>(null)
 
@@ -74,6 +76,18 @@ export function DocList() {
       if (doc) {
         selectDoc(doc.slug)
         navigate('doc-detail', { docSlug: doc.slug })
+      }
+    } else if (event.name === 'y' && !event.shift && !event.ctrl) {
+      // Copy selected doc title
+      const doc = docs[selectedIndex]
+      if (doc) {
+        copy(doc.title, 'title')
+      }
+    } else if (event.name === 'y' && event.shift && !event.ctrl) {
+      // Copy selected doc slug
+      const doc = docs[selectedIndex]
+      if (doc) {
+        copy(doc.slug, 'slug')
       }
     }
   })

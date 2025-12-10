@@ -5,11 +5,13 @@ import { MainPanel } from '../layout/MainPanel.js'
 import { useDocs } from '../../hooks/useDocs.js'
 import { useNavigation } from '../../hooks/useNavigation.js'
 import { useAppState } from '../../state/app-state.js'
+import { useClipboard } from '../../hooks/useClipboard.js'
 
 export function DocDetail() {
   const { selectedDocSlug, selectedDoc, isLoadingDoc, loadDoc } = useDocs()
   const { goBack } = useNavigation()
   const { state } = useAppState()
+  const { copy } = useClipboard()
   const scrollBoxRef = useRef<ScrollBoxRenderable>(null)
 
   useEffect(() => {
@@ -37,6 +39,25 @@ export function DocDetail() {
       if (scrollBoxRef.current) {
         scrollBoxRef.current.scrollBy(-10)
       }
+    } else if (
+      event.name === 'y' &&
+      !event.shift &&
+      !event.ctrl &&
+      selectedDoc
+    ) {
+      // Copy title
+      copy(selectedDoc.title, 'title')
+    } else if (
+      event.name === 'y' &&
+      event.shift &&
+      !event.ctrl &&
+      selectedDoc
+    ) {
+      // Copy slug
+      copy(selectedDoc.slug, 'slug')
+    } else if (event.name === 'y' && event.ctrl && selectedDoc) {
+      // Copy content
+      copy(selectedDoc.content, 'content')
     }
   })
 

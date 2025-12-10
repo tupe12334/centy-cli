@@ -4,6 +4,7 @@ import type { KeyEvent, ScrollBoxRenderable } from '@opentui/core'
 import { MainPanel } from '../layout/MainPanel.js'
 import { useNavigation } from '../../hooks/useNavigation.js'
 import { useAppState } from '../../state/app-state.js'
+import { useClipboard } from '../../hooks/useClipboard.js'
 import { daemonService } from '../../services/daemon-service.js'
 import type { Issue } from '../../../daemon/types.js'
 
@@ -49,6 +50,7 @@ function IssueSection({ title, children }: IssueSectionProps) {
 export function IssueDetail() {
   const { viewParams, goBack, navigate } = useNavigation()
   const { state, dispatch } = useAppState()
+  const { copy } = useClipboard()
   const [issue, setIssue] = useState<Issue | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const scrollBoxRef = useRef<ScrollBoxRenderable>(null)
@@ -107,6 +109,15 @@ export function IssueDetail() {
       if (scrollBoxRef.current) {
         scrollBoxRef.current.scrollBy(-10)
       }
+    } else if (event.name === 'y' && !event.shift && !event.ctrl && issue) {
+      // Copy title
+      copy(`#${issue.displayNumber} ${issue.title}`, 'title')
+    } else if (event.name === 'y' && event.shift && !event.ctrl && issue) {
+      // Copy UUID
+      copy(issue.id, 'UUID')
+    } else if (event.name === 'y' && event.ctrl && issue) {
+      // Copy description
+      copy(issue.description || '', 'description')
     }
   })
 

@@ -114,9 +114,13 @@ export function App({ onExit }: AppProps) {
       { key: '^S', label: 'save' },
       { key: 'Esc', label: 'cancel' },
     ],
-    issues: [{ key: 'n', label: 'new' }],
+    issues: [
+      { key: 'n', label: 'new' },
+      { key: 'y', label: 'copy' },
+    ],
     'issue-detail': [
       { key: 'e', label: 'edit' },
+      { key: 'y', label: 'copy' },
       { key: 'Esc', label: 'back' },
       { key: 'd/u', label: 'scroll' },
     ],
@@ -130,9 +134,13 @@ export function App({ onExit }: AppProps) {
       { key: '^S', label: 'save' },
       { key: 'Esc', label: 'cancel' },
     ],
-    prs: [{ key: 'n', label: 'new' }],
+    prs: [
+      { key: 'n', label: 'new' },
+      { key: 'y', label: 'copy' },
+    ],
     'pr-detail': [
       { key: 'e', label: 'edit' },
+      { key: 'y', label: 'copy' },
       { key: 'Esc', label: 'back' },
       { key: 'd/u', label: 'scroll' },
     ],
@@ -146,8 +154,12 @@ export function App({ onExit }: AppProps) {
       { key: '^S', label: 'save' },
       { key: 'Esc', label: 'cancel' },
     ],
-    docs: [{ key: 'n', label: 'new' }],
+    docs: [
+      { key: 'n', label: 'new' },
+      { key: 'y', label: 'copy' },
+    ],
     'doc-detail': [
+      { key: 'y', label: 'copy' },
       { key: 'Esc', label: 'back' },
       { key: 'd/u', label: 'scroll' },
     ],
@@ -188,7 +200,11 @@ export function App({ onExit }: AppProps) {
       </box>
 
       {/* Status bar */}
-      <StatusBar shortcuts={shortcuts} error={state.error} />
+      <StatusBar
+        shortcuts={shortcuts}
+        error={state.error}
+        copyMessage={state.copyMessage}
+      />
     </box>
   )
 }
@@ -241,6 +257,11 @@ function renderView(view: ViewId) {
             <text> ←/→ or Tab - Cycle through views</text>
             <text> 1-6 - Quick jump to view</text>
             <text> Esc/Backspace - Go back</text>
+            <text> </text>
+            <text fg="cyan">Copy (List/Detail Views)</text>
+            <text> y - Copy title</text>
+            <text> Y (Shift+y) - Copy UUID/slug</text>
+            <text> Ctrl+y - Copy description/content</text>
             <text> </text>
             <text fg="cyan">Global</text>
             <text> q or Ctrl-C - Quit</text>

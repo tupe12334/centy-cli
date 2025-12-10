@@ -104,6 +104,9 @@ export interface AppState {
 
   // PR list sorting
   prSort: PrSortConfig
+
+  // Copy feedback
+  copyMessage: string | null
 }
 
 export type AppAction =
@@ -127,6 +130,7 @@ export type AppAction =
   | { type: 'SET_DAEMON_STATUS'; connected: boolean }
   | { type: 'SET_ISSUE_SORT'; sort: IssueSortConfig }
   | { type: 'SET_PR_SORT'; sort: PrSortConfig }
+  | { type: 'SET_COPY_MESSAGE'; message: string | null }
 
 const initialState: AppState = {
   currentView: 'projects',
@@ -148,6 +152,7 @@ const initialState: AppState = {
   daemonConnected: false,
   issueSort: DEFAULT_SORT_CONFIG,
   prSort: DEFAULT_PR_SORT_CONFIG,
+  copyMessage: null,
 }
 
 function appReducer(state: AppState, action: AppAction): AppState {
@@ -243,6 +248,9 @@ function appReducer(state: AppState, action: AppAction): AppState {
 
     case 'SET_PR_SORT':
       return { ...state, prSort: action.sort }
+
+    case 'SET_COPY_MESSAGE':
+      return { ...state, copyMessage: action.message }
 
     default:
       return state

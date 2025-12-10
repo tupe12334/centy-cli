@@ -4,6 +4,7 @@ import type { KeyEvent, ScrollBoxRenderable } from '@opentui/core'
 import { MainPanel } from '../layout/MainPanel.js'
 import { usePullRequests } from '../../hooks/usePullRequests.js'
 import { useNavigation } from '../../hooks/useNavigation.js'
+import { useClipboard } from '../../hooks/useClipboard.js'
 import {
   useAppState,
   PR_SORT_FIELD_LABELS,
@@ -90,6 +91,7 @@ export function PRList() {
   const { prs, isLoading, selectPr } = usePullRequests()
   const { navigate } = useNavigation()
   const { state, dispatch } = useAppState()
+  const { copy } = useClipboard()
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [showAll, setShowAll] = useState(false)
   const scrollBoxRef = useRef<ScrollBoxRenderable>(null)
@@ -172,6 +174,18 @@ export function PRList() {
       cycleSortField() // Cycle through sort fields
     } else if (event.name === 'S') {
       toggleSortDirection() // Toggle sort direction
+    } else if (event.name === 'y' && !event.shift && !event.ctrl) {
+      // Copy selected PR title
+      const pr = sortedPrs[selectedIndex]
+      if (pr) {
+        copy(`PR #${pr.displayNumber} ${pr.title}`, 'title')
+      }
+    } else if (event.name === 'y' && event.shift && !event.ctrl) {
+      // Copy selected PR UUID
+      const pr = sortedPrs[selectedIndex]
+      if (pr) {
+        copy(pr.id, 'UUID')
+      }
     }
   })
 

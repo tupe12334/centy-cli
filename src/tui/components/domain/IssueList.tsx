@@ -4,6 +4,7 @@ import type { KeyEvent, ScrollBoxRenderable } from '@opentui/core'
 import { MainPanel } from '../layout/MainPanel.js'
 import { useIssues } from '../../hooks/useIssues.js'
 import { useNavigation } from '../../hooks/useNavigation.js'
+import { useClipboard } from '../../hooks/useClipboard.js'
 import {
   useAppState,
   SORT_FIELD_LABELS,
@@ -75,6 +76,7 @@ export function IssueList() {
   const { issues, isLoading, selectIssue } = useIssues()
   const { navigate } = useNavigation()
   const { state, dispatch } = useAppState()
+  const { copy } = useClipboard()
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [showAll, setShowAll] = useState(false)
   const scrollBoxRef = useRef<ScrollBoxRenderable>(null)
@@ -154,6 +156,18 @@ export function IssueList() {
       cycleSortField() // Cycle through sort fields
     } else if (event.name === 'S') {
       toggleSortDirection() // Toggle sort direction
+    } else if (event.name === 'y' && !event.shift && !event.ctrl) {
+      // Copy selected issue title
+      const issue = sortedIssues[selectedIndex]
+      if (issue) {
+        copy(`#${issue.displayNumber} ${issue.title}`, 'title')
+      }
+    } else if (event.name === 'y' && event.shift && !event.ctrl) {
+      // Copy selected issue UUID
+      const issue = sortedIssues[selectedIndex]
+      if (issue) {
+        copy(issue.id, 'UUID')
+      }
     }
   })
 

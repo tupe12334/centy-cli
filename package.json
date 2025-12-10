@@ -102,6 +102,7 @@
     "@oclif/plugin-help": "^6.2.36",
     "@opentui/core": "^0.1.56",
     "@opentui/react": "^0.1.56",
+    "clipboardy": "^5.0.1",
     "react": "^19.2.1",
     "tar": "^7.5.2"
   }

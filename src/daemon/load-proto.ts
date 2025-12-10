@@ -20,6 +20,8 @@ import type {
   Config,
   GetIssueRequest,
   GetIssueByDisplayNumberRequest,
+  GetIssuesByUuidRequest,
+  GetIssuesByUuidResponse,
   Issue,
   ListIssuesRequest,
   ListIssuesResponse,
@@ -143,6 +145,13 @@ interface CentyDaemonClient {
   getIssueByDisplayNumber(
     request: GetIssueByDisplayNumberRequest,
     callback: (error: ServiceError | null, response: Issue) => void
+  ): void
+  getIssuesByUuid(
+    request: GetIssuesByUuidRequest,
+    callback: (
+      error: ServiceError | null,
+      response: GetIssuesByUuidResponse
+    ) => void
   ): void
   listIssues(
     request: ListIssuesRequest,

@@ -7,6 +7,8 @@ import { daemonIsInitialized } from '../../daemon/daemon-is-initialized.js'
  * Get a single doc by slug
  */
 export default class GetDoc extends Command {
+  static override aliases = ['show:doc']
+
   static override args = {
     slug: Args.string({
       description: 'Doc slug',

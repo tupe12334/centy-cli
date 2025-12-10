@@ -8,6 +8,8 @@ import { daemonIsInitialized } from '../../daemon/daemon-is-initialized.js'
  * Get a single pull request by ID or display number
  */
 export default class GetPr extends Command {
+  static override aliases = ['show:pr']
+
   static override args = {
     id: Args.string({
       description: 'PR ID (UUID) or display number',

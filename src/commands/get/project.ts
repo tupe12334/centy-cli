@@ -6,6 +6,8 @@ import { daemonGetProjectInfo } from '../../daemon/daemon-get-project-info.js'
  * Get info about a specific project
  */
 export default class GetProject extends Command {
+  static override aliases = ['show:project']
+
   static override args = {
     path: Args.string({
       description: 'Path to the project (defaults to current directory)',

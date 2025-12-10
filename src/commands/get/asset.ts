@@ -8,6 +8,8 @@ import { daemonIsInitialized } from '../../daemon/daemon-is-initialized.js'
  * Get an asset and save it to a file
  */
 export default class GetAsset extends Command {
+  static override aliases = ['show:asset']
+
   static override args = {
     filename: Args.string({
       description: 'Asset filename',

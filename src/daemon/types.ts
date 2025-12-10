@@ -157,6 +157,24 @@ export interface GetIssueByDisplayNumberRequest {
   displayNumber: number
 }
 
+// ============ Global Issue Search Types ============
+
+export interface GetIssuesByUuidRequest {
+  uuid: string
+}
+
+export interface IssueWithProject {
+  issue: Issue
+  projectPath: string
+  projectName: string
+}
+
+export interface GetIssuesByUuidResponse {
+  issues: IssueWithProject[]
+  totalCount: number
+  errors: string[]
+}
+
 export interface ListIssuesRequest {
   projectPath: string
   status?: string

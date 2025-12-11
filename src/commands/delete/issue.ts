@@ -2,7 +2,10 @@
 import { Args, Command, Flags } from '@oclif/core'
 
 import { daemonDeleteIssue } from '../../daemon/daemon-delete-issue.js'
-import { daemonIsInitialized } from '../../daemon/daemon-is-initialized.js'
+import {
+  ensureInitialized,
+  NotInitializedError,
+} from '../../utils/ensure-initialized.js'
 
 /**
  * Delete an issue
@@ -35,9 +38,13 @@ export default class DeleteIssue extends Command {
     const { args, flags } = await this.parse(DeleteIssue)
     const cwd = process.env['CENTY_CWD'] ?? process.cwd()
 
-    const initStatus = await daemonIsInitialized({ projectPath: cwd })
-    if (!initStatus.initialized) {
-      this.error('.centy folder not initialized. Run "centy init" first.')
+    try {
+      await ensureInitialized(cwd)
+    } catch (error) {
+      if (error instanceof NotInitializedError) {
+        this.error(error.message)
+      }
+      throw error instanceof Error ? error : new Error(String(error))
     }
 
     if (!flags.force) {

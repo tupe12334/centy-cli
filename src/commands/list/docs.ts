@@ -1,8 +1,11 @@
 /* eslint-disable ddd/require-spec-file */
 import { Command, Flags } from '@oclif/core'
 
-import { daemonIsInitialized } from '../../daemon/daemon-is-initialized.js'
 import { daemonListDocs } from '../../daemon/daemon-list-docs.js'
+import {
+  ensureInitialized,
+  NotInitializedError,
+} from '../../utils/ensure-initialized.js'
 
 /**
  * List all documentation files
@@ -26,9 +29,13 @@ export default class ListDocs extends Command {
     const { flags } = await this.parse(ListDocs)
     const cwd = process.env['CENTY_CWD'] ?? process.cwd()
 
-    const initStatus = await daemonIsInitialized({ projectPath: cwd })
-    if (!initStatus.initialized) {
-      this.error('.centy folder not initialized. Run "centy init" first.')
+    try {
+      await ensureInitialized(cwd)
+    } catch (error) {
+      if (error instanceof NotInitializedError) {
+        this.error(error.message)
+      }
+      throw error instanceof Error ? error : new Error(String(error))
     }
 
     const response = await daemonListDocs({

@@ -3,7 +3,10 @@ import { Args, Command, Flags } from '@oclif/core'
 import { daemonGetIssue } from '../../daemon/daemon-get-issue.js'
 import { daemonGetIssueByDisplayNumber } from '../../daemon/daemon-get-issue-by-display-number.js'
 import { daemonGetIssuesByUuid } from '../../daemon/daemon-get-issues-by-uuid.js'
-import { daemonIsInitialized } from '../../daemon/daemon-is-initialized.js'
+import {
+  ensureInitialized,
+  NotInitializedError,
+} from '../../utils/ensure-initialized.js'
 
 /**
  * Get a single issue by ID or display number
@@ -107,9 +110,13 @@ export default class GetIssue extends Command {
     }
 
     // Local search (existing behavior)
-    const initStatus = await daemonIsInitialized({ projectPath: cwd })
-    if (!initStatus.initialized) {
-      this.error('.centy folder not initialized. Run "centy init" first.')
+    try {
+      await ensureInitialized(cwd)
+    } catch (error) {
+      if (error instanceof NotInitializedError) {
+        this.error(error.message)
+      }
+      throw error instanceof Error ? error : new Error(String(error))
     }
 
     // Try to parse as display number first

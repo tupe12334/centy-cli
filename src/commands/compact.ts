@@ -5,7 +5,10 @@ import { Command, Flags } from '@oclif/core'
 
 import { daemonGetCompact } from '../daemon/daemon-get-compact.js'
 import { daemonGetInstruction } from '../daemon/daemon-get-instruction.js'
-import { daemonIsInitialized } from '../daemon/daemon-is-initialized.js'
+import {
+  ensureInitialized,
+  NotInitializedError,
+} from '../utils/ensure-initialized.js'
 import { daemonListUncompactedIssues } from '../daemon/daemon-list-uncompacted-issues.js'
 import { daemonMarkIssuesCompacted } from '../daemon/daemon-mark-issues-compacted.js'
 import { daemonSaveMigration } from '../daemon/daemon-save-migration.js'
@@ -50,9 +53,13 @@ export default class Compact extends Command {
     const cwd = process.env['CENTY_CWD'] ?? process.cwd()
 
     // Check if initialized
-    const initStatus = await daemonIsInitialized({ projectPath: cwd })
-    if (!initStatus.initialized) {
-      this.error('.centy folder not initialized. Run "centy init" first.')
+    try {
+      await ensureInitialized(cwd)
+    } catch (error) {
+      if (error instanceof NotInitializedError) {
+        this.error(error.message)
+      }
+      throw error instanceof Error ? error : new Error(String(error))
     }
 
     // If input file provided, apply LLM response

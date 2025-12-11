@@ -4,7 +4,10 @@ import { basename } from 'node:path'
 import { Args, Command, Flags } from '@oclif/core'
 
 import { daemonAddAsset } from '../../daemon/daemon-add-asset.js'
-import { daemonIsInitialized } from '../../daemon/daemon-is-initialized.js'
+import {
+  ensureInitialized,
+  NotInitializedError,
+} from '../../utils/ensure-initialized.js'
 
 /**
  * Add an asset to an issue, PR, or as a shared asset
@@ -51,9 +54,13 @@ export default class AddAsset extends Command {
     const { args, flags } = await this.parse(AddAsset)
     const cwd = process.env['CENTY_CWD'] ?? process.cwd()
 
-    const initStatus = await daemonIsInitialized({ projectPath: cwd })
-    if (!initStatus.initialized) {
-      this.error('.centy folder not initialized. Run "centy init" first.')
+    try {
+      await ensureInitialized(cwd)
+    } catch (error) {
+      if (error instanceof NotInitializedError) {
+        this.error(error.message)
+      }
+      throw error instanceof Error ? error : new Error(String(error))
     }
 
     if (!flags.issue && !flags.pr && !flags.shared) {

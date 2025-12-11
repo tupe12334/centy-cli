@@ -2,7 +2,10 @@
 import { Command, Flags } from '@oclif/core'
 
 import { daemonGetProjectVersion } from '../daemon/daemon-get-project-version.js'
-import { daemonIsInitialized } from '../daemon/daemon-is-initialized.js'
+import {
+  ensureInitialized,
+  NotInitializedError,
+} from '../utils/ensure-initialized.js'
 
 /**
  * Get project version info
@@ -27,9 +30,13 @@ export default class Version extends Command {
     const { flags } = await this.parse(Version)
     const cwd = process.env['CENTY_CWD'] ?? process.cwd()
 
-    const initStatus = await daemonIsInitialized({ projectPath: cwd })
-    if (!initStatus.initialized) {
-      this.error('.centy folder not initialized. Run "centy init" first.')
+    try {
+      await ensureInitialized(cwd)
+    } catch (error) {
+      if (error instanceof NotInitializedError) {
+        this.error(error.message)
+      }
+      throw error instanceof Error ? error : new Error(String(error))
     }
 
     const response = await daemonGetProjectVersion({

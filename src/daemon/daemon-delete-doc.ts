@@ -1,4 +1,3 @@
-/* eslint-disable ddd/require-spec-file */
 import type { DeleteDocRequest, DeleteDocResponse } from './types.js'
 import { getDaemonClient } from './load-proto.js'
 

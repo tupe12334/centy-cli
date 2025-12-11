@@ -1,4 +1,3 @@
-/* eslint-disable ddd/require-spec-file */
 import type {
   GetIssuesByUuidRequest,
   GetIssuesByUuidResponse,

@@ -22,6 +22,8 @@ export default [
     rules: {
       'security/detect-non-literal-fs-filename': 'off',
       'no-restricted-syntax': 'off',
+      'import/first': 'off',
+      'no-optional-chaining/no-optional-chaining': 'off',
     },
   },
   {

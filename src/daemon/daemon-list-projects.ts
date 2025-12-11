@@ -1,4 +1,3 @@
-/* eslint-disable ddd/require-spec-file */
 import type { ListProjectsRequest, ListProjectsResponse } from './types.js'
 import { getDaemonClient } from './load-proto.js'
 

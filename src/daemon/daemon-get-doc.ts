@@ -1,4 +1,3 @@
-/* eslint-disable ddd/require-spec-file */
 import type { GetDocRequest, Doc } from './types.js'
 import { getDaemonClient } from './load-proto.js'
 

@@ -1,4 +1,3 @@
-/* eslint-disable ddd/require-spec-file */
 import { getDaemonClient } from './load-proto.js'
 
 export interface DaemonConnectionStatus {

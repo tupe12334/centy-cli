@@ -1,4 +1,3 @@
-/* eslint-disable ddd/require-spec-file */
 import type { IsInitializedRequest, IsInitializedResponse } from './types.js'
 import { getDaemonClient } from './load-proto.js'
 

@@ -7,12 +7,11 @@ import { projectFlag } from '../../flags/project-flag.js'
 import {
   formatCrossProjectHint,
   formatCrossProjectJson,
+  handleNotInitializedWithSearch,
   isNotFoundError,
+  isValidUuid,
 } from '../../utils/cross-project-search.js'
-import {
-  ensureInitialized,
-  NotInitializedError,
-} from '../../utils/ensure-initialized.js'
+import { ensureInitialized } from '../../utils/ensure-initialized.js'
 import { resolveProjectPath } from '../../utils/resolve-project-path.js'
 
 /**
@@ -61,9 +60,7 @@ export default class GetIssue extends Command {
     // Handle global search
     if (flags.global) {
       // Validate UUID format for global search
-      const uuidRegex =
-        /^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/i
-      if (!uuidRegex.test(args.id)) {
+      if (!isValidUuid(args.id)) {
         this.error(
           'Global search requires a valid UUID. Display numbers are not supported for global search.'
         )
@@ -123,9 +120,31 @@ export default class GetIssue extends Command {
     try {
       await ensureInitialized(cwd)
     } catch (error) {
-      if (error instanceof NotInitializedError) {
-        this.error(error.message)
+      const result = await handleNotInitializedWithSearch(error, {
+        entityType: 'issue',
+        identifier: args.id,
+        jsonMode: flags.json,
+        shouldSearch: isValidUuid,
+        async globalSearchFn() {
+          const searchResult = await daemonGetIssuesByUuid({ uuid: args.id })
+          return {
+            matches: searchResult.issues.map(iwp => ({
+              projectName: iwp.projectName,
+              projectPath: iwp.projectPath,
+            })),
+            errors: searchResult.errors,
+          }
+        },
+      })
+
+      if (result !== null) {
+        if (result.jsonOutput !== undefined) {
+          this.log(JSON.stringify(result.jsonOutput, null, 2))
+          this.exit(1)
+        }
+        this.error(result.message)
       }
+
       throw error instanceof Error ? error : new Error(String(error))
     }
 
@@ -167,31 +186,27 @@ export default class GetIssue extends Command {
       }
     } catch (error) {
       // For UUID lookups that fail, try cross-project search to provide helpful hints
-      if (!isDisplayNumber && isNotFoundError(error)) {
-        const uuidRegex =
-          /^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/i
-        if (uuidRegex.test(args.id)) {
-          // Try global search to see if the issue exists in another project
-          const result = await daemonGetIssuesByUuid({ uuid: args.id })
-          if (result.issues.length > 0) {
-            const matches = result.issues.map(iwp => ({
-              projectName: iwp.projectName,
-              projectPath: iwp.projectPath,
-            }))
+      if (!isDisplayNumber && isNotFoundError(error) && isValidUuid(args.id)) {
+        // Try global search to see if the issue exists in another project
+        const result = await daemonGetIssuesByUuid({ uuid: args.id })
+        if (result.issues.length > 0) {
+          const matches = result.issues.map(iwp => ({
+            projectName: iwp.projectName,
+            projectPath: iwp.projectPath,
+          }))
 
-            if (flags.json) {
-              this.log(
-                JSON.stringify(
-                  formatCrossProjectJson('issue', args.id, matches),
-                  null,
-                  2
-                )
+          if (flags.json) {
+            this.log(
+              JSON.stringify(
+                formatCrossProjectJson('issue', args.id, matches),
+                null,
+                2
               )
-              this.exit(1)
-            }
-
-            this.error(formatCrossProjectHint('issue', args.id, matches))
+            )
+            this.exit(1)
           }
+
+          this.error(formatCrossProjectHint('issue', args.id, matches))
         }
       }
       // Re-throw original error if not found anywhere or not a NOT_FOUND error

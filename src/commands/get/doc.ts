@@ -6,12 +6,10 @@ import { projectFlag } from '../../flags/project-flag.js'
 import {
   formatCrossProjectHint,
   formatCrossProjectJson,
+  handleNotInitializedWithSearch,
   isNotFoundError,
 } from '../../utils/cross-project-search.js'
-import {
-  ensureInitialized,
-  NotInitializedError,
-} from '../../utils/ensure-initialized.js'
+import { ensureInitialized } from '../../utils/ensure-initialized.js'
 import { resolveProjectPath } from '../../utils/resolve-project-path.js'
 
 /**
@@ -109,9 +107,30 @@ export default class GetDoc extends Command {
     try {
       await ensureInitialized(cwd)
     } catch (error) {
-      if (error instanceof NotInitializedError) {
-        this.error(error.message)
+      const result = await handleNotInitializedWithSearch(error, {
+        entityType: 'doc',
+        identifier: args.slug,
+        jsonMode: flags.json,
+        async globalSearchFn() {
+          const searchResult = await daemonGetDocsBySlug({ slug: args.slug })
+          return {
+            matches: searchResult.docs.map(dwp => ({
+              projectName: dwp.projectName,
+              projectPath: dwp.projectPath,
+            })),
+            errors: searchResult.errors,
+          }
+        },
+      })
+
+      if (result !== null) {
+        if (result.jsonOutput !== undefined) {
+          this.log(JSON.stringify(result.jsonOutput, null, 2))
+          this.exit(1)
+        }
+        this.error(result.message)
       }
+
       throw error instanceof Error ? error : new Error(String(error))
     }
 

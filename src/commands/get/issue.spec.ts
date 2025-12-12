@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 
+import GetIssue from './issue.js'
+
 // Mock daemon functions
 const mockDaemonGetIssue = vi.fn()
 const mockDaemonGetIssueByDisplayNumber = vi.fn()
@@ -218,6 +220,20 @@ describe('get issue command - ID parsing', () => {
       const isDisplayNumber =
         isAllDigits && !Number.isNaN(displayNumber) && displayNumber > 0
       expect(isDisplayNumber).toBe(false)
+    })
+  })
+
+  describe('command aliases', () => {
+    it('should have "issue" alias for shorthand access (centy issue <id>)', () => {
+      expect(GetIssue.aliases).toContain('issue')
+    })
+
+    it('should have "show:issue" alias for backwards compatibility', () => {
+      expect(GetIssue.aliases).toContain('show:issue')
+    })
+
+    it('should have exactly 2 aliases configured', () => {
+      expect(GetIssue.aliases).toHaveLength(2)
     })
   })
 })

@@ -19,7 +19,7 @@ import { resolveProjectPath } from '../../utils/resolve-project-path.js'
  * Get a single issue by ID or display number
  */
 export default class GetIssue extends Command {
-  static override aliases = ['show:issue']
+  static override aliases = ['show:issue', 'issue']
 
   static override args = {
     id: Args.string({

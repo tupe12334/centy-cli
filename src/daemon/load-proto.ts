@@ -20,6 +20,8 @@ import type {
   Manifest,
   GetConfigRequest,
   Config,
+  UpdateConfigRequest,
+  UpdateConfigResponse,
   GetIssueRequest,
   GetIssueByDisplayNumberRequest,
   GetIssuesByUuidRequest,
@@ -117,6 +119,11 @@ import type {
   // Organization types
   SetProjectOrganizationRequest,
   SetProjectOrganizationResponse,
+  // Custom title types
+  SetProjectUserTitleRequest,
+  SetProjectUserTitleResponse,
+  SetProjectTitleRequest,
+  SetProjectTitleResponse,
   CreateOrganizationRequest,
   CreateOrganizationResponse,
   ListOrganizationsRequest,
@@ -143,6 +150,24 @@ import type {
   OrgConfig,
   UpdateOrgConfigRequest,
   UpdateOrgConfigResponse,
+  // User types
+  User,
+  CreateUserRequest,
+  CreateUserResponse,
+  GetUserRequest,
+  ListUsersRequest,
+  ListUsersResponse,
+  UpdateUserRequest,
+  UpdateUserResponse,
+  DeleteUserRequest,
+  DeleteUserResponse,
+  SyncUsersRequest,
+  SyncUsersResponse,
+  // Issue assignee types
+  AssignIssueRequest,
+  AssignIssueResponse,
+  UnassignIssueRequest,
+  UnassignIssueResponse,
 } from './types.js'
 
 const currentDir = dirname(fileURLToPath(import.meta.url))
@@ -222,6 +247,13 @@ interface CentyDaemonClient {
   getConfig(
     request: GetConfigRequest,
     callback: (error: ServiceError | null, response: Config) => void
+  ): void
+  updateConfig(
+    request: UpdateConfigRequest,
+    callback: (
+      error: ServiceError | null,
+      response: UpdateConfigResponse
+    ) => void
   ): void
 
   // Doc operations
@@ -340,6 +372,20 @@ interface CentyDaemonClient {
     callback: (
       error: ServiceError | null,
       response: SetProjectOrganizationResponse
+    ) => void
+  ): void
+  setProjectUserTitle(
+    request: SetProjectUserTitleRequest,
+    callback: (
+      error: ServiceError | null,
+      response: SetProjectUserTitleResponse
+    ) => void
+  ): void
+  setProjectTitle(
+    request: SetProjectTitleRequest,
+    callback: (
+      error: ServiceError | null,
+      response: SetProjectTitleResponse
     ) => void
   ): void
 
@@ -550,6 +596,48 @@ interface CentyDaemonClient {
     callback: (
       error: ServiceError | null,
       response: MarkIssuesCompactedResponse
+    ) => void
+  ): void
+
+  // User operations
+  createUser(
+    request: CreateUserRequest,
+    callback: (error: ServiceError | null, response: CreateUserResponse) => void
+  ): void
+  getUser(
+    request: GetUserRequest,
+    callback: (error: ServiceError | null, response: User) => void
+  ): void
+  listUsers(
+    request: ListUsersRequest,
+    callback: (error: ServiceError | null, response: ListUsersResponse) => void
+  ): void
+  updateUser(
+    request: UpdateUserRequest,
+    callback: (error: ServiceError | null, response: UpdateUserResponse) => void
+  ): void
+  deleteUser(
+    request: DeleteUserRequest,
+    callback: (error: ServiceError | null, response: DeleteUserResponse) => void
+  ): void
+  syncUsers(
+    request: SyncUsersRequest,
+    callback: (error: ServiceError | null, response: SyncUsersResponse) => void
+  ): void
+
+  // Issue assignee operations
+  assignIssue(
+    request: AssignIssueRequest,
+    callback: (
+      error: ServiceError | null,
+      response: AssignIssueResponse
+    ) => void
+  ): void
+  unassignIssue(
+    request: UnassignIssueRequest,
+    callback: (
+      error: ServiceError | null,
+      response: UnassignIssueResponse
     ) => void
   ): void
 }

@@ -174,6 +174,7 @@ export interface IssueMetadata {
   priorityLabel: string
   compacted: boolean
   compactedAt: string
+  assignees: string[]
 }
 
 export interface GetIssueRequest {
@@ -453,6 +454,8 @@ export interface ProjectInfo {
   isArchived: boolean
   organizationSlug: string
   organizationName: string
+  userTitle: string
+  projectTitle: string
 }
 
 export interface ListProjectsRequest {
@@ -524,6 +527,28 @@ export interface SetProjectOrganizationRequest {
 }
 
 export interface SetProjectOrganizationResponse {
+  success: boolean
+  error: string
+  project: ProjectInfo
+}
+
+export interface SetProjectUserTitleRequest {
+  projectPath: string
+  title: string
+}
+
+export interface SetProjectUserTitleResponse {
+  success: boolean
+  error: string
+  project: ProjectInfo
+}
+
+export interface SetProjectTitleRequest {
+  projectPath: string
+  title: string
+}
+
+export interface SetProjectTitleResponse {
   success: boolean
   error: string
   project: ProjectInfo
@@ -960,4 +985,120 @@ export interface UpdateOrgConfigResponse {
   success: boolean
   error: string
   config: OrgConfig
+}
+
+// ============ User Types ============
+
+export interface User {
+  id: string
+  name: string
+  email: string
+  gitUsernames: string[]
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreateUserRequest {
+  projectPath: string
+  id: string
+  name: string
+  email?: string
+  gitUsernames?: string[]
+}
+
+export interface CreateUserResponse {
+  success: boolean
+  error: string
+  user?: User
+  manifest?: Manifest
+}
+
+export interface GetUserRequest {
+  projectPath: string
+  userId: string
+}
+
+export interface ListUsersRequest {
+  projectPath: string
+  gitUsername?: string
+}
+
+export interface ListUsersResponse {
+  users: User[]
+  totalCount: number
+}
+
+export interface UpdateUserRequest {
+  projectPath: string
+  userId: string
+  name?: string
+  email?: string
+  gitUsernames?: string[]
+}
+
+export interface UpdateUserResponse {
+  success: boolean
+  error: string
+  user?: User
+  manifest?: Manifest
+}
+
+export interface DeleteUserRequest {
+  projectPath: string
+  userId: string
+}
+
+export interface DeleteUserResponse {
+  success: boolean
+  error: string
+  manifest?: Manifest
+}
+
+export interface GitContributor {
+  name: string
+  email: string
+}
+
+export interface SyncUsersRequest {
+  projectPath: string
+  dryRun: boolean
+}
+
+export interface SyncUsersResponse {
+  success: boolean
+  error: string
+  created: string[]
+  skipped: string[]
+  errors: string[]
+  wouldCreate: GitContributor[]
+  wouldSkip: GitContributor[]
+  manifest?: Manifest
+}
+
+// ============ Issue Assignee Types ============
+
+export interface AssignIssueRequest {
+  projectPath: string
+  issueId: string
+  userIds: string[]
+}
+
+export interface AssignIssueResponse {
+  success: boolean
+  error: string
+  issue?: Issue
+  manifest?: Manifest
+}
+
+export interface UnassignIssueRequest {
+  projectPath: string
+  issueId: string
+  userIds: string[]
+}
+
+export interface UnassignIssueResponse {
+  success: boolean
+  error: string
+  issue?: Issue
+  manifest?: Manifest
 }

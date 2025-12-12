@@ -59,7 +59,11 @@ export async function handleNotInitializedWithSearch(
         return {
           foundElsewhere: true,
           message: '',
-          jsonOutput: formatCrossProjectJson(entityType, identifier, result.matches),
+          jsonOutput: formatCrossProjectJson(
+            entityType,
+            identifier,
+            result.matches
+          ),
         }
       }
 

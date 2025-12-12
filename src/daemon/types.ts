@@ -7,6 +7,7 @@ export interface InitRequest {
   projectPath: string
   force: boolean
   decisions?: ReconciliationDecisions
+  config?: Config
 }
 
 export interface InitResponse {
@@ -35,6 +36,7 @@ export interface ReconciliationPlan {
 export interface ExecuteReconciliationRequest {
   projectPath: string
   decisions?: ReconciliationDecisions
+  config?: Config
 }
 
 export interface ReconciliationDecisions {
@@ -107,6 +109,18 @@ export interface GetConfigRequest {
   projectPath: string
 }
 
+export interface LlmConfig {
+  autoCloseOnComplete: boolean
+  updateStatusOnStart: boolean
+  allowDirectEdits: boolean
+}
+
+export interface LinkTypeDefinition {
+  name: string
+  inverse: string
+  description: string
+}
+
 export interface Config {
   customFields: CustomFieldDefinition[]
   defaults: Record<string, string>
@@ -114,6 +128,21 @@ export interface Config {
   allowedStates: string[]
   defaultState: string
   version: string
+  stateColors: Record<string, string>
+  priorityColors: Record<string, string>
+  llm: LlmConfig
+  customLinkTypes: LinkTypeDefinition[]
+}
+
+export interface UpdateConfigRequest {
+  projectPath: string
+  config: Config
+}
+
+export interface UpdateConfigResponse {
+  success: boolean
+  error: string
+  config: Config
 }
 
 export interface CustomFieldDefinition {

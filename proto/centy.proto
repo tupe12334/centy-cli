@@ -34,6 +34,12 @@ service CentyDaemon {
   // Delete an issue
   rpc DeleteIssue(DeleteIssueRequest) returns (DeleteIssueResponse);
 
+  // Move an issue to another project
+  rpc MoveIssue(MoveIssueRequest) returns (MoveIssueResponse);
+
+  // Duplicate an issue (same project or different project)
+  rpc DuplicateIssue(DuplicateIssueRequest) returns (DuplicateIssueResponse);
+
   // Get the next issue number
   rpc GetNextIssueNumber(GetNextIssueNumberRequest) returns (GetNextIssueNumberResponse);
 
@@ -69,6 +75,12 @@ service CentyDaemon {
   // Delete a doc
   rpc DeleteDoc(DeleteDocRequest) returns (DeleteDocResponse);
 
+  // Move a doc to another project
+  rpc MoveDoc(MoveDocRequest) returns (MoveDocResponse);
+
+  // Duplicate a doc (same project or different project)
+  rpc DuplicateDoc(DuplicateDocRequest) returns (DuplicateDocResponse);
+
   // ============ Asset RPCs ============
 
   // Add an asset to an issue or as a shared asset
@@ -85,6 +97,17 @@ service CentyDaemon {
 
   // List all shared assets
   rpc ListSharedAssets(ListSharedAssetsRequest) returns (ListAssetsResponse);
+
+  // ============ Plan RPCs ============
+
+  // Get an issue's plan
+  rpc GetPlan(GetPlanRequest) returns (GetPlanResponse);
+
+  // Update (or create) an issue's plan
+  rpc UpdatePlan(UpdatePlanRequest) returns (UpdatePlanResponse);
+
+  // Delete an issue's plan
+  rpc DeletePlan(DeletePlanRequest) returns (DeletePlanResponse);
 
   // ============ Project Registry RPCs ============
 
@@ -105,6 +128,26 @@ service CentyDaemon {
 
   // Set project archived status
   rpc SetProjectArchived(SetProjectArchivedRequest) returns (SetProjectArchivedResponse);
+
+  // Set project organization
+  rpc SetProjectOrganization(SetProjectOrganizationRequest) returns (SetProjectOrganizationResponse);
+
+  // ============ Organization RPCs ============
+
+  // Create a new organization
+  rpc CreateOrganization(CreateOrganizationRequest) returns (CreateOrganizationResponse);
+
+  // List all organizations
+  rpc ListOrganizations(ListOrganizationsRequest) returns (ListOrganizationsResponse);
+
+  // Get a specific organization
+  rpc GetOrganization(GetOrganizationRequest) returns (GetOrganizationResponse);
+
+  // Update an organization
+  rpc UpdateOrganization(UpdateOrganizationRequest) returns (UpdateOrganizationResponse);
+
+  // Delete an organization
+  rpc DeleteOrganization(DeleteOrganizationRequest) returns (DeleteOrganizationResponse);
 
   // ============ Version RPCs ============
 
@@ -324,6 +367,7 @@ message Issue {
   string title = 4;
   string description = 5;
   IssueMetadata metadata = 6;
+  bool has_plan = 7;              // Whether issue has a plan.md file
 }
 
 message IssueMetadata {
@@ -360,6 +404,7 @@ message IssueWithProject {
   Issue issue = 1;
   string project_path = 2;        // Absolute path to the project where this issue was found
   string project_name = 3;        // Human-readable project name (directory name)
+  string display_path = 4;        // Human-readable path with ~/ for home dir (use for display only)
 }
 
 message GetIssuesByUuidResponse {
@@ -409,6 +454,38 @@ message DeleteIssueResponse {
   bool success = 1;
   string error = 2;
   Manifest manifest = 3;          // Updated manifest after deletion
+}
+
+// ============ Issue Move/Duplicate Messages ============
+
+message MoveIssueRequest {
+  string source_project_path = 1;       // Project containing the issue
+  string issue_id = 2;                  // UUID of the issue to move
+  string target_project_path = 3;       // Target project path
+}
+
+message MoveIssueResponse {
+  bool success = 1;
+  string error = 2;
+  Issue issue = 3;                      // The moved issue (same UUID, new display_number)
+  uint32 old_display_number = 4;        // Original display number for reference
+  Manifest source_manifest = 5;         // Updated source project manifest
+  Manifest target_manifest = 6;         // Updated target project manifest
+}
+
+message DuplicateIssueRequest {
+  string source_project_path = 1;       // Project containing the original issue
+  string issue_id = 2;                  // UUID of the issue to duplicate
+  string target_project_path = 3;       // Target project (can be same as source)
+  string new_title = 4;                 // Optional: override title (default: "Copy of {original}")
+}
+
+message DuplicateIssueResponse {
+  bool success = 1;
+  string error = 2;
+  Issue issue = 3;                      // The new duplicate issue (new UUID, new display_number)
+  string original_issue_id = 4;         // UUID of the original issue
+  Manifest manifest = 5;                // Updated target project manifest
 }
 
 // ============ Manifest Messages ============
@@ -533,6 +610,7 @@ message DocWithProject {
   Doc doc = 1;
   string project_path = 2;            // Absolute path to the project where this doc was found
   string project_name = 3;            // Human-readable project name (directory name)
+  string display_path = 4;            // Human-readable path with ~/ for home dir (use for display only)
 }
 
 message GetDocsBySlugResponse {
@@ -589,6 +667,40 @@ message DeleteDocResponse {
   bool success = 1;
   string error = 2;
   Manifest manifest = 3;
+}
+
+// ============ Doc Move/Duplicate Messages ============
+
+message MoveDocRequest {
+  string source_project_path = 1;       // Project containing the doc
+  string slug = 2;                      // Slug of the doc to move
+  string target_project_path = 3;       // Target project path
+  string new_slug = 4;                  // Optional: new slug if conflict exists
+}
+
+message MoveDocResponse {
+  bool success = 1;
+  string error = 2;
+  Doc doc = 3;                          // The moved doc
+  string old_slug = 4;                  // Original slug for reference
+  Manifest source_manifest = 5;         // Updated source project manifest
+  Manifest target_manifest = 6;         // Updated target project manifest
+}
+
+message DuplicateDocRequest {
+  string source_project_path = 1;       // Project containing the original doc
+  string slug = 2;                      // Slug of the doc to duplicate
+  string target_project_path = 3;       // Target project (can be same as source)
+  string new_slug = 4;                  // Optional: override slug (default: "{slug}-copy")
+  string new_title = 5;                 // Optional: override title (default: "Copy of {original}")
+}
+
+message DuplicateDocResponse {
+  bool success = 1;
+  string error = 2;
+  Doc doc = 3;                          // The new duplicate doc
+  string original_slug = 4;             // Slug of the original doc
+  Manifest manifest = 5;                // Updated target project manifest
 }
 
 // ============ Asset Messages ============
@@ -663,6 +775,42 @@ message ListSharedAssetsRequest {
   string project_path = 1;
 }
 
+// ============ Plan Messages ============
+
+message GetPlanRequest {
+  string project_path = 1;
+  string issue_id = 2;            // Issue ID or display number
+}
+
+message GetPlanResponse {
+  bool exists = 1;                // Whether plan.md exists
+  string content = 2;             // Plan content (empty if not exists)
+  string updated_at = 3;          // ISO timestamp of last modification (empty if not exists)
+}
+
+message UpdatePlanRequest {
+  string project_path = 1;
+  string issue_id = 2;            // Issue ID or display number
+  string content = 3;             // New plan content
+}
+
+message UpdatePlanResponse {
+  bool success = 1;
+  string error = 2;
+  Manifest manifest = 3;
+}
+
+message DeletePlanRequest {
+  string project_path = 1;
+  string issue_id = 2;            // Issue ID or display number
+}
+
+message DeletePlanResponse {
+  bool success = 1;
+  string error = 2;
+  Manifest manifest = 3;
+}
+
 // ============ Project Registry Messages ============
 
 // Returned by API (enriched with live data from disk)
@@ -677,12 +825,16 @@ message ProjectInfo {
   bool is_favorite = 8;           // User-marked favorite status
   bool is_archived = 9;           // User-marked archived status
   string display_path = 10;       // Human-readable path with ~/ for home dir (use for display only)
+  string organization_slug = 11;  // Organization slug (empty if ungrouped)
+  string organization_name = 12;  // Organization display name (for convenience)
 }
 
 message ListProjectsRequest {
   bool include_stale = 1;         // Include projects where path no longer exists
   bool include_uninitialized = 2; // Include projects without .centy manifest
   bool include_archived = 3;      // Include archived projects (default: false)
+  string organization_slug = 4;   // Filter by organization (empty = all)
+  bool ungrouped_only = 5;        // Only show projects without organization
 }
 
 message ListProjectsResponse {
@@ -738,6 +890,79 @@ message SetProjectArchivedResponse {
   bool success = 1;
   string error = 2;
   ProjectInfo project = 3;        // The updated project info
+}
+
+message SetProjectOrganizationRequest {
+  string project_path = 1;
+  string organization_slug = 2;   // Empty to remove from organization
+}
+
+message SetProjectOrganizationResponse {
+  bool success = 1;
+  string error = 2;
+  ProjectInfo project = 3;        // The updated project info
+}
+
+// ============ Organization Messages ============
+
+message Organization {
+  string slug = 1;                // Unique identifier (kebab-case)
+  string name = 2;                // Display name
+  string description = 3;         // Optional description
+  string created_at = 4;          // ISO timestamp
+  string updated_at = 5;          // ISO timestamp
+  uint32 project_count = 6;       // Number of projects in this org
+}
+
+message CreateOrganizationRequest {
+  string slug = 1;                // Unique slug (auto-generated from name if empty)
+  string name = 2;                // Display name (required)
+  string description = 3;         // Optional description
+}
+
+message CreateOrganizationResponse {
+  bool success = 1;
+  string error = 2;
+  Organization organization = 3;
+}
+
+message ListOrganizationsRequest {}
+
+message ListOrganizationsResponse {
+  repeated Organization organizations = 1;
+  int32 total_count = 2;
+}
+
+message GetOrganizationRequest {
+  string slug = 1;
+}
+
+message GetOrganizationResponse {
+  bool found = 1;
+  Organization organization = 2;
+}
+
+message UpdateOrganizationRequest {
+  string slug = 1;                // Current slug
+  string name = 2;                // New name (empty = don't change)
+  string description = 3;         // New description (empty = don't change)
+  string new_slug = 4;            // Rename slug (empty = keep current)
+}
+
+message UpdateOrganizationResponse {
+  bool success = 1;
+  string error = 2;
+  Organization organization = 3;
+}
+
+message DeleteOrganizationRequest {
+  string slug = 1;
+}
+
+message DeleteOrganizationResponse {
+  bool success = 1;
+  string error = 2;
+  uint32 unassigned_projects = 3; // Projects that are now ungrouped (should be 0 if block deletion)
 }
 
 // ============ Version Messages ============
@@ -891,6 +1116,7 @@ message PrWithProject {
   PullRequest pr = 1;
   string project_path = 2;            // Absolute path to the project where this PR was found
   string project_name = 3;            // Human-readable project name (directory name)
+  string display_path = 4;            // Human-readable path with ~/ for home dir (use for display only)
 }
 
 message GetPrsByUuidResponse {

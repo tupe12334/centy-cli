@@ -52,6 +52,13 @@ import type {
   DeleteAssetRequest,
   DeleteAssetResponse,
   ListSharedAssetsRequest,
+  // Plan types
+  GetPlanRequest,
+  GetPlanResponse,
+  UpdatePlanRequest,
+  UpdatePlanResponse,
+  DeletePlanRequest,
+  DeletePlanResponse,
   ListProjectsRequest,
   ListProjectsResponse,
   RegisterProjectRequest,
@@ -269,6 +276,20 @@ interface CentyDaemonClient {
   listSharedAssets(
     request: ListSharedAssetsRequest,
     callback: (error: ServiceError | null, response: ListAssetsResponse) => void
+  ): void
+
+  // Plan operations
+  getPlan(
+    request: GetPlanRequest,
+    callback: (error: ServiceError | null, response: GetPlanResponse) => void
+  ): void
+  updatePlan(
+    request: UpdatePlanRequest,
+    callback: (error: ServiceError | null, response: UpdatePlanResponse) => void
+  ): void
+  deletePlan(
+    request: DeletePlanRequest,
+    callback: (error: ServiceError | null, response: DeletePlanResponse) => void
   ): void
 
   // Project registry operations

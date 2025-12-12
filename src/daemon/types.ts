@@ -374,6 +374,42 @@ export interface ListSharedAssetsRequest {
   projectPath: string
 }
 
+// ============ Plan Types ============
+
+export interface GetPlanRequest {
+  projectPath: string
+  issueId: string
+}
+
+export interface GetPlanResponse {
+  exists: boolean
+  content: string
+  updatedAt: string
+}
+
+export interface UpdatePlanRequest {
+  projectPath: string
+  issueId: string
+  content: string
+}
+
+export interface UpdatePlanResponse {
+  success: boolean
+  error: string
+  manifest?: Manifest
+}
+
+export interface DeletePlanRequest {
+  projectPath: string
+  issueId: string
+}
+
+export interface DeletePlanResponse {
+  success: boolean
+  error: string
+  manifest?: Manifest
+}
+
 // ============ Project Registry Types ============
 
 export interface ProjectInfo {

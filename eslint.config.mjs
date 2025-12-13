@@ -17,4 +17,15 @@ export default [
       },
     },
   },
+  // Test utility files - allow test-specific patterns
+  {
+    files: ['**/testing/**/*.ts', '**/command-test-utils.ts'],
+    rules: {
+      'ddd/require-spec-file': 'off',
+      'single-export/single-export': 'off',
+      'error/no-generic-error': 'off',
+      'error/require-custom-error': 'off',
+      'no-restricted-syntax': 'off',
+    },
+  },
 ]

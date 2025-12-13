@@ -37,7 +37,7 @@ function AssetItem({ asset, isSelected }: AssetItemProps) {
             `  ${asset.filename}`
           )}
         </text>
-        // eslint-disable-next-line custom/jsx-classname-required
+        {}
         {asset.isShared && <text fg="cyan"> [shared]</text>}
       </box>
       <box flexDirection="row" paddingLeft={4}>

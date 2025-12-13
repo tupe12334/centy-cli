@@ -37,7 +37,7 @@ function CustomFieldDisplay({ field }: CustomFieldDisplayProps) {
       <box flexDirection="row">
         <text fg="yellow">{field.name}</text>
         <text fg="gray"> ({field.fieldType})</text>
-        // eslint-disable-next-line custom/jsx-classname-required
+        {}
         {field.required && <text fg="red"> *required</text>}
       </box>
       {field.defaultValue && (

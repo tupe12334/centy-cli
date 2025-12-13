@@ -311,7 +311,6 @@ export function IssueEdit() {
             borderStyle={activeField === 'title' ? 'single' : undefined}
           >
             <text>{title || (activeField === 'title' ? '│' : '')}</text>
-            // eslint-disable-next-line custom/jsx-classname-required
             {activeField === 'title' && <text fg="cyan">_</text>}
           </box>
         </box>
@@ -329,7 +328,6 @@ export function IssueEdit() {
             <text>
               {description || (activeField === 'description' ? '' : '')}
             </text>
-            // eslint-disable-next-line custom/jsx-classname-required
             {activeField === 'description' && <text fg="cyan">_</text>}
           </box>
         </box>
@@ -340,12 +338,10 @@ export function IssueEdit() {
             <b>Priority {activeField === 'priority' ? '▸' : ' '}</b>
           </text>
           <box paddingLeft={2} flexDirection="row">
-            // eslint-disable-next-line custom/jsx-classname-required
             {activeField === 'priority' && <text fg="gray">◀ </text>}
             <text fg={getPriorityColor(priority)}>
               {getPriorityLabel(priority)} ({priority}/{priorityLevels})
             </text>
-            // eslint-disable-next-line custom/jsx-classname-required
             {activeField === 'priority' && <text fg="gray"> ▶</text>}
           </box>
           {activeField === 'priority' && (
@@ -361,10 +357,8 @@ export function IssueEdit() {
             <b>Status {activeField === 'status' ? '▸' : ' '}</b>
           </text>
           <box paddingLeft={2} flexDirection="row">
-            // eslint-disable-next-line custom/jsx-classname-required
             {activeField === 'status' && <text fg="gray">◀ </text>}
             <text fg={getStatusColor(status)}>{status}</text>
-            // eslint-disable-next-line custom/jsx-classname-required
             {activeField === 'status' && <text fg="gray"> ▶</text>}
           </box>
           {activeField === 'status' && (

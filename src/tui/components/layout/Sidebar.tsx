@@ -30,11 +30,11 @@ export function Sidebar({
 
           return (
             <box key={view} height={1}>
+              {}
               <text
                 fg={isCurrent ? 'cyan' : isSelected ? 'white' : 'gray'}
                 bg={isSelected ? 'gray' : undefined}
               >
-                // eslint-disable-next-line custom/jsx-classname-required
                 {isCurrent ? <b>{label}</b> : label}
               </text>
             </box>

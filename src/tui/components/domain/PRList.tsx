@@ -269,8 +269,8 @@ export function PRList() {
 
           return (
             <box key={pr.id} height={ITEM_HEIGHT} flexDirection="row">
+              {}
               <text bg={isSelected ? 'gray' : undefined}>
-                // eslint-disable-next-line custom/jsx-classname-required
                 {isSelected ? <b>{'>'}</b> : ' '}
               </text>
               <text fg="cyan">#{String(pr.displayNumber)}</text>

@@ -211,7 +211,7 @@ export function IssueCreate() {
             borderStyle={activeField === 'title' ? 'single' : undefined}
           >
             <text>{title || (activeField === 'title' ? '│' : '')}</text>
-            // eslint-disable-next-line custom/jsx-classname-required
+            {}
             {activeField === 'title' && <text fg="cyan">_</text>}
           </box>
         </box>
@@ -229,7 +229,7 @@ export function IssueCreate() {
             <text>
               {description || (activeField === 'description' ? '' : '')}
             </text>
-            // eslint-disable-next-line custom/jsx-classname-required
+            {}
             {activeField === 'description' && <text fg="cyan">_</text>}
           </box>
         </box>
@@ -240,12 +240,12 @@ export function IssueCreate() {
             <b>Priority {activeField === 'priority' ? '▸' : ' '}</b>
           </text>
           <box paddingLeft={2} flexDirection="row">
-            // eslint-disable-next-line custom/jsx-classname-required
+            {}
             {activeField === 'priority' && <text fg="gray">◀ </text>}
             <text fg={getPriorityColor(priority)}>
               {getPriorityLabel(priority)} ({priority}/{priorityLevels})
             </text>
-            // eslint-disable-next-line custom/jsx-classname-required
+            {}
             {activeField === 'priority' && <text fg="gray"> ▶</text>}
           </box>
           {activeField === 'priority' && (

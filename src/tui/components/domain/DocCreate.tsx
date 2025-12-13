@@ -163,7 +163,6 @@ export function DocCreate() {
             borderStyle={activeField === 'title' ? 'single' : undefined}
           >
             <text>{title || (activeField === 'title' ? '│' : '')}</text>
-            // eslint-disable-next-line custom/jsx-classname-required
             {activeField === 'title' && <text fg="cyan">_</text>}
           </box>
           <box paddingLeft={2}>
@@ -181,11 +180,8 @@ export function DocCreate() {
             borderStyle={activeField === 'content' ? 'single' : undefined}
             height={10}
           >
-            <text>
-              {content || (activeField === 'content' ? '' : '')}
-              // eslint-disable-next-line custom/jsx-classname-required
-              {activeField === 'content' && <text fg="cyan">_</text>}
-            </text>
+            <text>{content || (activeField === 'content' ? '' : '')}</text>
+            {activeField === 'content' && <text fg="cyan">_</text>}
           </box>
           {activeField === 'content' && (
             <box paddingLeft={2}>

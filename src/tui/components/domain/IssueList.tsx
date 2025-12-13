@@ -248,8 +248,8 @@ export function IssueList() {
 
           return (
             <box key={issue.id} height={ITEM_HEIGHT} flexDirection="row">
+              {}
               <text bg={isSelected ? 'gray' : undefined}>
-                // eslint-disable-next-line custom/jsx-classname-required
                 {isSelected ? <b>{'>'}</b> : ' '}
               </text>
               <text fg="cyan">#{String(issue.displayNumber)}</text>

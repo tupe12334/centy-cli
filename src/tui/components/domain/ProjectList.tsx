@@ -40,7 +40,7 @@ function ProjectItem({ project, isSelected }: ProjectItemProps) {
         <text fg="gray">
           {String(project.issueCount)} issues, {String(project.docCount)} docs
         </text>
-        // eslint-disable-next-line custom/jsx-classname-required
+        {}
         {!project.initialized && <text fg="yellow"> (not initialized)</text>}
       </box>
     </box>

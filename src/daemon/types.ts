@@ -77,6 +77,7 @@ export interface CreateIssueRequest {
   status: string
   customFields: Record<string, string>
   template?: string
+  draft?: boolean
 }
 
 export interface CreateIssueResponse {
@@ -175,6 +176,7 @@ export interface IssueMetadata {
   compacted: boolean
   compactedAt: string
   assignees: string[]
+  draft: boolean
 }
 
 export interface GetIssueRequest {
@@ -209,6 +211,7 @@ export interface ListIssuesRequest {
   projectPath: string
   status?: string
   priority?: number
+  draft?: boolean
 }
 
 export interface ListIssuesResponse {
@@ -224,6 +227,7 @@ export interface UpdateIssueRequest {
   status?: string
   priority?: number
   customFields?: Record<string, string>
+  draft?: boolean
 }
 
 export interface UpdateIssueResponse {
@@ -241,6 +245,38 @@ export interface DeleteIssueRequest {
 export interface DeleteIssueResponse {
   success: boolean
   error: string
+  manifest?: Manifest
+}
+
+// ============ Move/Duplicate Issue Types ============
+
+export interface MoveIssueRequest {
+  sourceProjectPath: string
+  issueId: string
+  targetProjectPath: string
+}
+
+export interface MoveIssueResponse {
+  success: boolean
+  error: string
+  issue: Issue
+  oldDisplayNumber: number
+  sourceManifest?: Manifest
+  targetManifest?: Manifest
+}
+
+export interface DuplicateIssueRequest {
+  sourceProjectPath: string
+  issueId: string
+  targetProjectPath: string
+  newTitle?: string
+}
+
+export interface DuplicateIssueResponse {
+  success: boolean
+  error: string
+  issue: Issue
+  originalIssueId: string
   manifest?: Manifest
 }
 
@@ -329,6 +365,40 @@ export interface DeleteDocRequest {
 export interface DeleteDocResponse {
   success: boolean
   error: string
+  manifest?: Manifest
+}
+
+// ============ Move/Duplicate Doc Types ============
+
+export interface MoveDocRequest {
+  sourceProjectPath: string
+  slug: string
+  targetProjectPath: string
+  newSlug?: string
+}
+
+export interface MoveDocResponse {
+  success: boolean
+  error: string
+  doc: Doc
+  oldSlug: string
+  sourceManifest?: Manifest
+  targetManifest?: Manifest
+}
+
+export interface DuplicateDocRequest {
+  sourceProjectPath: string
+  slug: string
+  targetProjectPath: string
+  newSlug?: string
+  newTitle?: string
+}
+
+export interface DuplicateDocResponse {
+  success: boolean
+  error: string
+  doc: Doc
+  originalSlug: string
   manifest?: Manifest
 }
 

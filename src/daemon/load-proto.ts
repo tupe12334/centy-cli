@@ -33,6 +33,10 @@ import type {
   UpdateIssueResponse,
   DeleteIssueRequest,
   DeleteIssueResponse,
+  MoveIssueRequest,
+  MoveIssueResponse,
+  DuplicateIssueRequest,
+  DuplicateIssueResponse,
   CreateDocRequest,
   CreateDocResponse,
   GetDocRequest,
@@ -45,6 +49,10 @@ import type {
   UpdateDocResponse,
   DeleteDocRequest,
   DeleteDocResponse,
+  MoveDocRequest,
+  MoveDocResponse,
+  DuplicateDocRequest,
+  DuplicateDocResponse,
   AddAssetRequest,
   AddAssetResponse,
   ListAssetsRequest,
@@ -238,6 +246,17 @@ interface CentyDaemonClient {
       response: DeleteIssueResponse
     ) => void
   ): void
+  moveIssue(
+    request: MoveIssueRequest,
+    callback: (error: ServiceError | null, response: MoveIssueResponse) => void
+  ): void
+  duplicateIssue(
+    request: DuplicateIssueRequest,
+    callback: (
+      error: ServiceError | null,
+      response: DuplicateIssueResponse
+    ) => void
+  ): void
 
   // Manifest and Config
   getManifest(
@@ -283,6 +302,17 @@ interface CentyDaemonClient {
   deleteDoc(
     request: DeleteDocRequest,
     callback: (error: ServiceError | null, response: DeleteDocResponse) => void
+  ): void
+  moveDoc(
+    request: MoveDocRequest,
+    callback: (error: ServiceError | null, response: MoveDocResponse) => void
+  ): void
+  duplicateDoc(
+    request: DuplicateDocRequest,
+    callback: (
+      error: ServiceError | null,
+      response: DuplicateDocResponse
+    ) => void
   ): void
 
   // Asset operations

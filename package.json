@@ -100,6 +100,7 @@
     "@grpc/proto-loader": "^0.7.13",
     "@oclif/core": "^4.8.0",
     "@oclif/plugin-help": "^6.2.36",
+    "@octokit/rest": "^22.0.1",
     "@opentui/core": "^0.1.56",
     "@opentui/react": "^0.1.56",
     "clipboardy": "^5.0.1",

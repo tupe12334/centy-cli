@@ -1,34 +1,41 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { fetchLatestRelease, fetchRelease } from './github-api.js'
 import { GithubApiError, ReleaseNotFoundError } from './errors.js'
 import type { GithubRelease } from './types.js'
 
-// Mock fetch globally
-const mockFetch = vi.fn()
+// Mock Octokit
+const mockGetLatestRelease = vi.fn()
+const mockListReleases = vi.fn()
+const mockGetReleaseByTag = vi.fn()
+
+vi.mock('@octokit/rest', () => {
+  return {
+    Octokit: class MockOctokit {
+      repos: {
+        getLatestRelease: typeof mockGetLatestRelease
+        listReleases: typeof mockListReleases
+        getReleaseByTag: typeof mockGetReleaseByTag
+      }
+      constructor() {
+        this.repos = {
+          getLatestRelease: mockGetLatestRelease,
+          listReleases: mockListReleases,
+          getReleaseByTag: mockGetReleaseByTag,
+        }
+      }
+    },
+  }
+})
+
+// Import after mocking
+const { fetchLatestRelease, fetchRelease } = await import('./github-api.js')
 
 beforeEach(() => {
-  vi.stubGlobal('fetch', mockFetch)
+  vi.clearAllMocks()
 })
 
 afterEach(() => {
   vi.restoreAllMocks()
-  mockFetch.mockReset()
 })
-
-// Helper to create mock Response
-function createMockResponse(
-  status: number,
-  data?: unknown,
-  statusText = ''
-): Response {
-  // eslint-disable-next-line no-restricted-syntax
-  return {
-    ok: status >= 200 && status < 300,
-    status,
-    statusText,
-    json: () => Promise.resolve(data),
-  } as Response
-}
 
 // Sample release data
 const mockRelease: GithubRelease = {
@@ -44,7 +51,7 @@ const mockRelease: GithubRelease = {
 
 describe('fetchLatestRelease', () => {
   it('should return the latest stable release', async () => {
-    mockFetch.mockResolvedValueOnce(createMockResponse(200, mockRelease))
+    mockGetLatestRelease.mockResolvedValueOnce({ data: mockRelease })
 
     const release = await fetchLatestRelease()
 
@@ -61,9 +68,9 @@ describe('fetchLatestRelease', () => {
     }
 
     // First call returns 404 (no stable release)
-    mockFetch.mockResolvedValueOnce(createMockResponse(404, null, 'Not Found'))
+    mockGetLatestRelease.mockRejectedValueOnce({ status: 404 })
     // Second call returns pre-releases list
-    mockFetch.mockResolvedValueOnce(createMockResponse(200, [preRelease]))
+    mockListReleases.mockResolvedValueOnce({ data: [preRelease] })
 
     const release = await fetchLatestRelease()
 
@@ -72,9 +79,9 @@ describe('fetchLatestRelease', () => {
 
   it('should throw GithubApiError when no releases exist', async () => {
     // First call returns 404 (no stable release)
-    mockFetch.mockResolvedValueOnce(createMockResponse(404, null, 'Not Found'))
+    mockGetLatestRelease.mockRejectedValueOnce({ status: 404 })
     // Second call returns empty array
-    mockFetch.mockResolvedValueOnce(createMockResponse(200, []))
+    mockListReleases.mockResolvedValueOnce({ data: [] })
 
     await expect(fetchLatestRelease()).rejects.toThrow(
       'No releases found for centy-daemon'
@@ -82,17 +89,19 @@ describe('fetchLatestRelease', () => {
   })
 
   it('should throw GithubApiError on rate limit', async () => {
-    mockFetch.mockResolvedValueOnce(
-      createMockResponse(403, null, 'rate limit exceeded')
-    )
+    mockGetLatestRelease.mockRejectedValueOnce({
+      status: 403,
+      message: 'rate limit exceeded',
+    })
 
     await expect(fetchLatestRelease()).rejects.toThrow(GithubApiError)
   })
 
   it('should throw GithubApiError on server error', async () => {
-    mockFetch.mockResolvedValueOnce(
-      createMockResponse(500, null, 'Internal Server Error')
-    )
+    mockGetLatestRelease.mockRejectedValueOnce({
+      status: 500,
+      message: 'Internal Server Error',
+    })
 
     await expect(fetchLatestRelease()).rejects.toThrow(GithubApiError)
   })
@@ -100,30 +109,32 @@ describe('fetchLatestRelease', () => {
 
 describe('fetchRelease', () => {
   it('should return a specific release by version', async () => {
-    mockFetch.mockResolvedValueOnce(createMockResponse(200, mockRelease))
+    mockGetReleaseByTag.mockResolvedValueOnce({ data: mockRelease })
 
     const release = await fetchRelease('v0.1.0')
 
     expect(release).toEqual(mockRelease)
-    expect(mockFetch).toHaveBeenCalledWith(
-      expect.stringContaining('/releases/tags/v0.1.0'),
-      expect.any(Object)
-    )
+    expect(mockGetReleaseByTag).toHaveBeenCalledWith({
+      owner: 'centy-io',
+      repo: 'centy-daemon',
+      tag: 'v0.1.0',
+    })
   })
 
   it('should add v prefix if missing', async () => {
-    mockFetch.mockResolvedValueOnce(createMockResponse(200, mockRelease))
+    mockGetReleaseByTag.mockResolvedValueOnce({ data: mockRelease })
 
     await fetchRelease('0.1.0')
 
-    expect(mockFetch).toHaveBeenCalledWith(
-      expect.stringContaining('/releases/tags/v0.1.0'),
-      expect.any(Object)
-    )
+    expect(mockGetReleaseByTag).toHaveBeenCalledWith({
+      owner: 'centy-io',
+      repo: 'centy-daemon',
+      tag: 'v0.1.0',
+    })
   })
 
   it('should throw ReleaseNotFoundError for non-existent version', async () => {
-    mockFetch.mockResolvedValueOnce(createMockResponse(404, null, 'Not Found'))
+    mockGetReleaseByTag.mockRejectedValueOnce({ status: 404 })
 
     await expect(fetchRelease('v0.0.0-nonexistent')).rejects.toThrow(
       ReleaseNotFoundError
@@ -131,7 +142,7 @@ describe('fetchRelease', () => {
   })
 
   it('should throw ReleaseNotFoundError with correct message', async () => {
-    mockFetch.mockResolvedValueOnce(createMockResponse(404, null, 'Not Found'))
+    mockGetReleaseByTag.mockRejectedValueOnce({ status: 404 })
 
     await expect(fetchRelease('v0.0.0-nonexistent')).rejects.toThrow(
       'Release v0.0.0-nonexistent not found'
@@ -139,7 +150,7 @@ describe('fetchRelease', () => {
   })
 
   it('should handle version without v prefix for non-existent release', async () => {
-    mockFetch.mockResolvedValueOnce(createMockResponse(404, null, 'Not Found'))
+    mockGetReleaseByTag.mockRejectedValueOnce({ status: 404 })
 
     // Without v prefix - should still normalize and throw ReleaseNotFoundError
     await expect(fetchRelease('0.0.0-nonexistent')).rejects.toThrow(
@@ -148,17 +159,19 @@ describe('fetchRelease', () => {
   })
 
   it('should throw GithubApiError on rate limit (403)', async () => {
-    mockFetch.mockResolvedValueOnce(
-      createMockResponse(403, null, 'rate limit exceeded')
-    )
+    mockGetReleaseByTag.mockRejectedValueOnce({
+      status: 403,
+      message: 'rate limit exceeded',
+    })
 
     await expect(fetchRelease('v0.1.0')).rejects.toThrow(GithubApiError)
   })
 
   it('should throw GithubApiError on server error (500)', async () => {
-    mockFetch.mockResolvedValueOnce(
-      createMockResponse(500, null, 'Internal Server Error')
-    )
+    mockGetReleaseByTag.mockRejectedValueOnce({
+      status: 500,
+      message: 'Internal Server Error',
+    })
 
     await expect(fetchRelease('v0.1.0')).rejects.toThrow(GithubApiError)
   })

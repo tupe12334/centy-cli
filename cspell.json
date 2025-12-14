@@ -37,6 +37,7 @@
     "Uncompacted",
     "unittests",
     "vitest",
+    "worktree",
     "johnd",
     "johndoe",
     "newuser",

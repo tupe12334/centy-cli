@@ -6,6 +6,7 @@ import { Args, Command, Flags } from '@oclif/core'
 import { daemonGetIssue } from '../../daemon/daemon-get-issue.js'
 import { daemonGetIssueByDisplayNumber } from '../../daemon/daemon-get-issue-by-display-number.js'
 import { daemonGetIssuesByUuid } from '../../daemon/daemon-get-issues-by-uuid.js'
+import { daemonSpawnAgent } from '../../daemon/daemon-spawn-agent.js'
 import { projectFlag } from '../../flags/project-flag.js'
 import {
   formatCrossProjectHint,
@@ -14,7 +15,10 @@ import {
   isNotFoundError,
   isValidUuid,
 } from '../../utils/cross-project-search.js'
-import { ensureInitialized } from '../../utils/ensure-initialized.js'
+import {
+  ensureInitialized,
+  NotInitializedError,
+} from '../../utils/ensure-initialized.js'
 import { resolveProjectPath } from '../../utils/resolve-project-path.js'
 
 /**
@@ -45,6 +49,8 @@ export default class GetIssue extends Command {
     '<%= config.bin %> get issue abc12345-1234-1234-1234-123456789abc -g --json',
     '<%= config.bin %> get issue 1 --project centy-daemon',
     '<%= config.bin %> get issue 1 --project /path/to/project',
+    '<%= config.bin %> issue 1 --action plan',
+    '<%= config.bin %> issue 1 -a implement',
   ]
 
   // eslint-disable-next-line no-restricted-syntax
@@ -59,12 +65,51 @@ export default class GetIssue extends Command {
       default: false,
     }),
     project: projectFlag,
+    action: Flags.string({
+      char: 'a',
+      description: 'Spawn AI agent with action (plan or implement)',
+      options: ['plan', 'implement'],
+    }),
   }
 
   // eslint-disable-next-line max-lines-per-function
   public async run(): Promise<void> {
     const { args, flags } = await this.parse(GetIssue)
     const cwd = await resolveProjectPath(flags.project)
+
+    // Handle action - spawn agent
+    if (flags.action !== undefined) {
+      try {
+        await ensureInitialized(cwd)
+      } catch (error) {
+        if (error instanceof NotInitializedError) {
+          this.error(error.message)
+        }
+        throw error instanceof Error ? error : new Error(String(error))
+      }
+
+      const response = await daemonSpawnAgent({
+        projectPath: cwd,
+        issueId: args.id,
+
+        action: flags.action === 'implement' ? 'IMPLEMENT' : 'PLAN',
+      })
+
+      if (!response.success) {
+        this.error(response.error)
+      }
+
+      if (flags.json) {
+        this.log(JSON.stringify(response, null, 2))
+        return
+      }
+
+      this.log(`Agent spawned: ${response.agentName}`)
+      this.log(`Issue: #${response.displayNumber}`)
+      this.log(`Action: ${flags.action}`)
+      this.log(`\nPrompt preview:\n${response.promptPreview}...`)
+      return
+    }
 
     // Handle global search
     if (flags.global) {

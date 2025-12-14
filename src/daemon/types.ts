@@ -1172,3 +1172,22 @@ export interface UnassignIssueResponse {
   issue?: Issue
   manifest?: Manifest
 }
+
+// ============ LLM Agent Types ============
+
+export interface SpawnAgentRequest {
+  projectPath: string
+  issueId: string
+  action: 'PLAN' | 'IMPLEMENT'
+  agentName?: string
+  extraArgs?: string[]
+}
+
+export interface SpawnAgentResponse {
+  success: boolean
+  error: string
+  agentName: string
+  issueId: string
+  displayNumber: number
+  promptPreview: string
+}

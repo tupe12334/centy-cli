@@ -176,6 +176,9 @@ import type {
   AssignIssueResponse,
   UnassignIssueRequest,
   UnassignIssueResponse,
+  // LLM Agent types
+  SpawnAgentRequest,
+  SpawnAgentResponse,
 } from './types.js'
 
 const currentDir = dirname(fileURLToPath(import.meta.url))
@@ -669,6 +672,12 @@ interface CentyDaemonClient {
       error: ServiceError | null,
       response: UnassignIssueResponse
     ) => void
+  ): void
+
+  // LLM Agent operations
+  spawnAgent(
+    request: SpawnAgentRequest,
+    callback: (error: ServiceError | null, response: SpawnAgentResponse) => void
   ): void
 }
 

@@ -114,6 +114,7 @@ export interface AppState {
 
 export type AppAction =
   | { type: 'NAVIGATE'; view: ViewId; params?: ViewParams }
+  | { type: 'NAVIGATE_REPLACE'; view: ViewId; params?: ViewParams }
   | { type: 'GO_BACK' }
   | { type: 'SET_PROJECTS'; projects: ProjectInfo[] }
   | { type: 'UPDATE_PROJECT'; project: ProjectInfo }
@@ -182,6 +183,14 @@ function appReducer(state: AppState, action: AppAction): AppState {
         viewParams: prev.params,
       }
     }
+
+    case 'NAVIGATE_REPLACE':
+      return {
+        ...state,
+        currentView: action.view,
+        // eslint-disable-next-line no-restricted-syntax
+        viewParams: action.params ?? {},
+      }
 
     case 'SET_PROJECTS':
       return { ...state, projects: action.projects }

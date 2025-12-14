@@ -38,7 +38,7 @@ function getStatusColor(status: string): string {
 }
 
 export function IssueEdit() {
-  const { viewParams, goBack, navigate } = useNavigation()
+  const { viewParams, goBack, navigateReplace } = useNavigation()
   const { state, dispatch } = useAppState()
   const { config } = useConfig()
 
@@ -117,7 +117,7 @@ export function IssueEdit() {
     if (result.success) {
       // Refresh issues list and navigate back to detail
       dispatch({ type: 'SET_ISSUES', issues: [] }) // Clear to force reload
-      navigate('issue-detail', { issueId: issue.id })
+      navigateReplace('issue-detail', { issueId: issue.id })
     } else {
       setError(result.error || 'Failed to update issue')
     }
@@ -129,7 +129,7 @@ export function IssueEdit() {
     priority,
     status,
     dispatch,
-    navigate,
+    navigateReplace,
   ])
 
   const moveToNextField = useCallback(() => {

@@ -59,7 +59,7 @@ function getStatusColor(status: string): string {
 }
 
 export function PREdit() {
-  const { viewParams, goBack, navigate } = useNavigation()
+  const { viewParams, goBack, navigateReplace } = useNavigation()
   const { state, dispatch } = useAppState()
   const { config } = useConfig()
 
@@ -142,7 +142,7 @@ export function PREdit() {
     if (result.success) {
       // Refresh PRs list and navigate back to detail
       dispatch({ type: 'SET_PRS', prs: [] }) // Clear to force reload
-      navigate('pr-detail', { prId: pr.id })
+      navigateReplace('pr-detail', { prId: pr.id })
     } else {
       setError(result.error || 'Failed to update PR')
     }
@@ -156,7 +156,7 @@ export function PREdit() {
     priority,
     status,
     dispatch,
-    navigate,
+    navigateReplace,
   ])
 
   const moveToNextField = useCallback(() => {

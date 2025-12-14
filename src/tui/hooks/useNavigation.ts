@@ -12,6 +12,13 @@ export function useNavigation() {
     [dispatch]
   )
 
+  const navigateReplace = useCallback(
+    (view: ViewId, params?: ViewParams) => {
+      dispatch({ type: 'NAVIGATE_REPLACE', view, params })
+    },
+    [dispatch]
+  )
+
   const goBack = useCallback(() => {
     dispatch({ type: 'GO_BACK' })
   }, [dispatch])
@@ -29,6 +36,7 @@ export function useNavigation() {
     canGoBack: state.viewHistory.length > 0,
     sidebarIndex: state.sidebarIndex,
     navigate,
+    navigateReplace,
     goBack,
     selectSidebarItem,
   }

@@ -1191,3 +1191,67 @@ export interface SpawnAgentResponse {
   displayNumber: number
   promptPreview: string
 }
+
+// ============ Temp Workspace Types ============
+
+export interface OpenInTempVscodeRequest {
+  projectPath: string
+  issueId: string
+  action: 'PLAN' | 'IMPLEMENT'
+  agentName?: string
+  ttlHours?: number
+}
+
+export interface OpenInTempVscodeResponse {
+  success: boolean
+  error: string
+  workspacePath: string
+  expiresAt: string
+  issueDisplayNumber: number
+  issueTitle: string
+  vscodeOpened: boolean
+}
+
+export interface TempWorkspace {
+  workspacePath: string
+  sourceProjectPath: string
+  issueId: string
+  issueDisplayNumber: number
+  issueTitle: string
+  agentName: string
+  action: 'PLAN' | 'IMPLEMENT'
+  createdAt: string
+  expiresAt: string
+}
+
+export interface ListTempWorkspacesRequest {
+  includeExpired?: boolean
+  sourceProjectPath?: string
+}
+
+export interface ListTempWorkspacesResponse {
+  workspaces: TempWorkspace[]
+  totalCount: number
+  expiredCount: number
+}
+
+export interface CloseTempWorkspaceRequest {
+  workspacePath: string
+  force?: boolean
+}
+
+export interface CloseTempWorkspaceResponse {
+  success: boolean
+  error: string
+  worktreeRemoved: boolean
+  registryRemoved: boolean
+}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface CleanupExpiredWorkspacesRequest {}
+
+export interface CleanupExpiredWorkspacesResponse {
+  success: boolean
+  cleanedCount: number
+  failedPaths: string[]
+}

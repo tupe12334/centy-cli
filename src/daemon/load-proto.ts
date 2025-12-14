@@ -179,6 +179,15 @@ import type {
   // LLM Agent types
   SpawnAgentRequest,
   SpawnAgentResponse,
+  // Temp workspace types
+  OpenInTempVscodeRequest,
+  OpenInTempVscodeResponse,
+  ListTempWorkspacesRequest,
+  ListTempWorkspacesResponse,
+  CloseTempWorkspaceRequest,
+  CloseTempWorkspaceResponse,
+  CleanupExpiredWorkspacesRequest,
+  CleanupExpiredWorkspacesResponse,
 } from './types.js'
 
 const currentDir = dirname(fileURLToPath(import.meta.url))
@@ -678,6 +687,36 @@ interface CentyDaemonClient {
   spawnAgent(
     request: SpawnAgentRequest,
     callback: (error: ServiceError | null, response: SpawnAgentResponse) => void
+  ): void
+
+  // Temp workspace operations
+  openInTempVscode(
+    request: OpenInTempVscodeRequest,
+    callback: (
+      error: ServiceError | null,
+      response: OpenInTempVscodeResponse
+    ) => void
+  ): void
+  listTempWorkspaces(
+    request: ListTempWorkspacesRequest,
+    callback: (
+      error: ServiceError | null,
+      response: ListTempWorkspacesResponse
+    ) => void
+  ): void
+  closeTempWorkspace(
+    request: CloseTempWorkspaceRequest,
+    callback: (
+      error: ServiceError | null,
+      response: CloseTempWorkspaceResponse
+    ) => void
+  ): void
+  cleanupExpiredWorkspaces(
+    request: CleanupExpiredWorkspacesRequest,
+    callback: (
+      error: ServiceError | null,
+      response: CleanupExpiredWorkspacesResponse
+    ) => void
   ): void
 }
 

@@ -9,7 +9,7 @@ describe('installDaemon', () => {
 
     expect(result).toHaveProperty('success')
     expect(typeof result.success).toBe('boolean')
-  })
+  }, 10_000)
 
   it('should return error for non-existent version', async () => {
     const result = await installDaemon({

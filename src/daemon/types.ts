@@ -534,6 +534,7 @@ export interface ListProjectsRequest {
   includeArchived?: boolean
   organizationSlug?: string
   ungroupedOnly?: boolean
+  includeTemp?: boolean
 }
 
 export interface ListProjectsResponse {

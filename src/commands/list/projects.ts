@@ -16,6 +16,7 @@ export default class ListProjects extends Command {
     '<%= config.bin %> list projects',
     '<%= config.bin %> list projects --include-stale',
     '<%= config.bin %> list projects --include-uninitialized',
+    '<%= config.bin %> list projects --include-temp',
     '<%= config.bin %> list projects --org centy-io',
     '<%= config.bin %> list projects --ungrouped',
     '<%= config.bin %> list projects --json',
@@ -29,6 +30,10 @@ export default class ListProjects extends Command {
     }),
     'include-uninitialized': Flags.boolean({
       description: 'Include projects that are not initialized',
+      default: false,
+    }),
+    'include-temp': Flags.boolean({
+      description: 'Include projects in system temp directory',
       default: false,
     }),
     org: Flags.string({
@@ -50,6 +55,7 @@ export default class ListProjects extends Command {
     const response = await daemonListProjects({
       includeStale: flags['include-stale'],
       includeUninitialized: flags['include-uninitialized'],
+      includeTemp: flags['include-temp'],
       organizationSlug: flags.org,
       ungroupedOnly: flags.ungrouped,
     })

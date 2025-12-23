@@ -4,8 +4,7 @@ import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 
 const BIN_DIR = path.resolve(__dirname, '../../../bin')
-const UNIX_WRAPPER = path.join(BIN_DIR, 'run')
-const WINDOWS_WRAPPER = path.join(BIN_DIR, 'run.cmd')
+const RUN_JS = path.join(BIN_DIR, 'run.js')
 
 interface SpawnResult {
   stdout: string
@@ -52,18 +51,17 @@ function checkBunAvailable(): boolean {
 }
 
 /**
- * Runs the shell wrapper script and captures output.
+ * Runs the bin/run.js script with Node and captures output.
  */
 async function runWrapper(
-  wrapperPath: string,
+  scriptPath: string,
   args: string[],
   env: NodeJS.ProcessEnv
 ): Promise<SpawnResult> {
   return new Promise((resolve, reject) => {
-    const isWindows = process.platform === 'win32'
-    const child = spawn(wrapperPath, args, {
+    // Run the script with node
+    const child = spawn('node', [scriptPath, ...args], {
       env,
-      shell: isWindows,
       stdio: ['pipe', 'pipe', 'pipe'],
     })
 
@@ -101,15 +99,12 @@ async function runWrapper(
 describe('runtime detection wrapper', () => {
   const bunAvailable = checkBunAvailable()
 
-  describe('bin/run (Unix)', () => {
-    // Skip Unix tests on Windows
-    const itUnix = process.platform === 'win32' ? it.skip : it
-
+  describe('bin/run.js (cross-platform)', () => {
     describe('when Bun is available', () => {
-      const itWithBun = bunAvailable ? itUnix : it.skip
+      const itWithBun = bunAvailable ? it : it.skip
 
       itWithBun('should not show Bun tip message on stderr', async () => {
-        const result = await runWrapper(UNIX_WRAPPER, ['--version'], {
+        const result = await runWrapper(RUN_JS, ['--version'], {
           ...process.env,
         })
 
@@ -118,7 +113,7 @@ describe('runtime detection wrapper', () => {
       })
 
       itWithBun('should execute successfully', async () => {
-        const result = await runWrapper(UNIX_WRAPPER, ['--version'], {
+        const result = await runWrapper(RUN_JS, ['--version'], {
           ...process.env,
         })
 
@@ -127,10 +122,10 @@ describe('runtime detection wrapper', () => {
     })
 
     describe('when only Node.js is available', () => {
-      itUnix('should show Bun installation tip on stderr', async () => {
+      it('should show Bun installation tip on stderr', async () => {
         const pathWithoutBun = createPathWithoutBun()
 
-        const result = await runWrapper(UNIX_WRAPPER, ['--version'], {
+        const result = await runWrapper(RUN_JS, ['--version'], {
           ...process.env,
           PATH: pathWithoutBun,
         })
@@ -141,10 +136,10 @@ describe('runtime detection wrapper', () => {
         expect(result.stderr).toContain('https://bun.sh')
       })
 
-      itUnix('should complete successfully with Node.js', async () => {
+      it('should complete successfully with Node.js', async () => {
         const pathWithoutBun = createPathWithoutBun()
 
-        const result = await runWrapper(UNIX_WRAPPER, ['--version'], {
+        const result = await runWrapper(RUN_JS, ['--version'], {
           ...process.env,
           PATH: pathWithoutBun,
         })
@@ -154,11 +149,11 @@ describe('runtime detection wrapper', () => {
     })
 
     describe('argument passing', () => {
-      itUnix('should pass arguments to the underlying script', async () => {
+      it('should pass arguments to the underlying script', async () => {
         const pathWithoutBun = createPathWithoutBun()
 
         // Use --help which outputs to stdout, allowing us to verify args were passed
-        const result = await runWrapper(UNIX_WRAPPER, ['--help'], {
+        const result = await runWrapper(RUN_JS, ['--help'], {
           ...process.env,
           PATH: pathWithoutBun,
         })
@@ -168,75 +163,24 @@ describe('runtime detection wrapper', () => {
         expect(result.stdout.length).toBeGreaterThan(0)
       })
 
-      itUnix('should handle multiple arguments', async () => {
+      it('should handle multiple arguments', async () => {
         const pathWithoutBun = createPathWithoutBun()
 
         // Test with a command that takes multiple args
-        const result = await runWrapper(UNIX_WRAPPER, ['--version'], {
+        const result = await runWrapper(RUN_JS, ['--version'], {
           ...process.env,
           PATH: pathWithoutBun,
         })
 
         expect(result.exitCode).toBe(0)
       })
-    })
-  })
-
-  describe('bin/run.cmd (Windows)', () => {
-    // Skip Windows tests on non-Windows platforms
-    const itWindows = process.platform === 'win32' ? it : it.skip
-
-    describe('when only Node.js is available', () => {
-      itWindows('should show Bun installation tip on stderr', async () => {
-        const pathWithoutBun = createPathWithoutBun()
-
-        const result = await runWrapper(WINDOWS_WRAPPER, ['--version'], {
-          ...process.env,
-          PATH: pathWithoutBun,
-        })
-
-        expect(result.stderr).toContain(
-          'Tip: Install Bun for faster CLI performance'
-        )
-        expect(result.stderr).toContain('https://bun.sh')
-      })
-
-      itWindows('should complete successfully with Node.js', async () => {
-        const pathWithoutBun = createPathWithoutBun()
-
-        const result = await runWrapper(WINDOWS_WRAPPER, ['--version'], {
-          ...process.env,
-          PATH: pathWithoutBun,
-        })
-
-        expect(result.exitCode).toBe(0)
-      })
-    })
-
-    describe('when Bun is available', () => {
-      const itWindowsWithBun =
-        bunAvailable && process.platform === 'win32' ? it : it.skip
-
-      itWindowsWithBun(
-        'should not show Bun tip message on stderr',
-        async () => {
-          const result = await runWrapper(WINDOWS_WRAPPER, ['--version'], {
-            ...process.env,
-          })
-
-          expect(result.stderr).not.toContain('Tip: Install Bun')
-        }
-      )
     })
   })
 
   describe('cross-platform behavior', () => {
-    it('should have correct wrapper script for current platform', () => {
-      const expectedScript = process.platform === 'win32' ? 'run.cmd' : 'run'
-      const wrapperPath = path.join(BIN_DIR, expectedScript)
-
-      // The file should exist (we're testing the path construction is correct)
-      expect(wrapperPath).toContain(expectedScript)
+    it('should use run.js as the single cross-platform entry point', () => {
+      // The entry point is now bin/run.js for all platforms
+      expect(RUN_JS).toContain('run.js')
     })
   })
 })

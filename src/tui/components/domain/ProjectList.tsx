@@ -17,7 +17,13 @@ interface ProjectItemProps {
 }
 
 function ProjectItem({ project, isSelected }: ProjectItemProps) {
-  const name = project.name || project.path.split('/').pop() || project.path
+  // Display custom title (user title takes precedence over project title over directory name)
+  const name =
+    project.userTitle ||
+    project.projectTitle ||
+    project.name ||
+    project.path.split('/').pop() ||
+    project.path
   const favoriteIndicator = project.isFavorite ? '★ ' : '  '
 
   return (
@@ -206,7 +212,13 @@ export function ProjectList() {
           <text fg="yellow">
             <b>Remove project from tracking?</b>
           </text>
-          <text>"{projectToUntrack.name}"</text>
+          <text>
+            "
+            {projectToUntrack.userTitle ||
+              projectToUntrack.projectTitle ||
+              projectToUntrack.name}
+            "
+          </text>
           <text fg="gray">
             (This only removes it from the list, not from disk)
           </text>

@@ -18,7 +18,6 @@ export default defineConfig({
         'src/lib/install-daemon/**',
         'src/lib/start/**',
         'src/daemon/**',
-        'src/tui/**',
         'src/flags/**',
         'src/lib/create-pr/**',
         'src/types/**',

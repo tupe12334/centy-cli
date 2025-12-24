@@ -44,27 +44,7 @@ centy create issue --title "Fix login bug" --priority high
 
 # List issues
 centy list issues
-
-# Open interactive TUI mode
-centy
 ```
-
-## Interactive TUI Mode
-
-Running `centy` without any arguments opens a full-screen interactive terminal UI:
-
-![Centy TUI](https://raw.githubusercontent.com/centy-io/centy-cli/main/assets/tui.png)
-
-### TUI Keyboard Shortcuts
-
-| Key       | Action                 |
-| --------- | ---------------------- |
-| `j` / `↓` | Move down              |
-| `k` / `↑` | Move up                |
-| `Enter`   | Select item            |
-| `Tab`     | Switch view            |
-| `1-6`     | Quick navigate to view |
-| `q`       | Quit                   |
 
 ## Commands
 

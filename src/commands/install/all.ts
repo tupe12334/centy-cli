@@ -3,15 +3,13 @@ import { Command, Flags } from '@oclif/core'
 import { getInstallScriptUrl } from '../../lib/install-script-url.js'
 
 // eslint-disable-next-line custom/no-default-class-export, class-export/class-export
-export default class InstallDaemon extends Command {
+export default class InstallAll extends Command {
   // eslint-disable-next-line no-restricted-syntax
-  static override description = 'Download and install the centy daemon binary'
+  static override description =
+    'Download and install all centy binaries (daemon and tui)'
 
   // eslint-disable-next-line no-restricted-syntax
-  static override examples = [
-    '<%= config.bin %> install daemon',
-    '<%= config.bin %> install daemon --version 0.1.0',
-  ]
+  static override examples = ['<%= config.bin %> install all']
 
   // eslint-disable-next-line no-restricted-syntax
   static override flags = {
@@ -22,24 +20,23 @@ export default class InstallDaemon extends Command {
   }
 
   public async run(): Promise<void> {
-    const { flags } = await this.parse(InstallDaemon)
+    const { flags } = await this.parse(InstallAll)
 
     const env = {
       ...process.env,
-      BINARIES: 'centy-daemon',
       ...(flags.version ? { VERSION: flags.version } : {}),
     }
 
-    this.log('Installing centy-daemon...')
+    this.log('Installing all centy binaries...')
 
     try {
       execSync(`curl -fsSL ${getInstallScriptUrl()} | sh`, {
         stdio: 'inherit',
         env,
       })
-      this.log('centy-daemon installed successfully')
+      this.log('All centy binaries installed successfully')
     } catch {
-      this.error('Failed to install centy-daemon')
+      this.error('Failed to install centy binaries')
     }
   }
 }

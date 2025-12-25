@@ -7,9 +7,9 @@ import {
 const mockCheckDaemonConnection = vi.fn()
 const mockFindDaemonBinary = vi.fn()
 const mockDaemonBinaryExists = vi.fn()
-const mockInstallDaemon = vi.fn()
 const mockWaitForDaemon = vi.fn()
 const mockSpawn = vi.fn()
+const mockExecSync = vi.fn()
 
 vi.mock('../daemon/check-daemon-connection.js', () => ({
   checkDaemonConnection: () => mockCheckDaemonConnection(),
@@ -21,10 +21,6 @@ vi.mock('../lib/start/find-daemon-binary.js', () => ({
 
 vi.mock('../lib/start/daemon-binary-exists.js', () => ({
   daemonBinaryExists: (path: string) => mockDaemonBinaryExists(path),
-}))
-
-vi.mock('../lib/install-daemon/index.js', () => ({
-  installDaemon: (...args: unknown[]) => mockInstallDaemon(...args),
 }))
 
 vi.mock('../lib/start/wait-for-daemon.js', () => ({
@@ -45,6 +41,7 @@ vi.mock('../utils/close-prompt-interface.js', () => ({
 
 vi.mock('node:child_process', () => ({
   spawn: (...args: unknown[]) => mockSpawn(...args),
+  execSync: (...args: unknown[]) => mockExecSync(...args),
 }))
 
 describe('Start command', () => {
@@ -151,11 +148,6 @@ describe('Start command', () => {
     mockCheckDaemonConnection.mockResolvedValue({ connected: false })
     // First call: not exists, second call: exists after install
     mockDaemonBinaryExists.mockReturnValueOnce(false).mockReturnValueOnce(true)
-    mockInstallDaemon.mockResolvedValue({
-      success: true,
-      version: '1.0.0',
-      installPath: '/usr/local/bin/centyd',
-    })
     mockWaitForDaemon.mockResolvedValue(true)
 
     const mockChild = {
@@ -171,7 +163,12 @@ describe('Start command', () => {
 
     await cmd.run()
 
-    expect(mockInstallDaemon).toHaveBeenCalled()
+    expect(mockExecSync).toHaveBeenCalledWith(
+      expect.stringContaining('curl -fsSL'),
+      expect.objectContaining({
+        env: expect.objectContaining({ BINARIES: 'centy-daemon' }),
+      })
+    )
     expect(cmd.logs.some(log => log.includes('Installing daemon'))).toBe(true)
   })
 
@@ -179,9 +176,8 @@ describe('Start command', () => {
     const { default: Command } = await import('./start.js')
     mockCheckDaemonConnection.mockResolvedValue({ connected: false })
     mockDaemonBinaryExists.mockReturnValue(false)
-    mockInstallDaemon.mockResolvedValue({
-      success: false,
-      error: 'Network error',
+    mockExecSync.mockImplementation(() => {
+      throw new Error('Network error')
     })
 
     const cmd = createMockCommand(Command, {

@@ -1,13 +1,9 @@
 /* eslint-disable max-lines */
 
-// eslint-disable-next-line import/order
-import { spawn } from 'node:child_process'
-
-// eslint-disable-next-line import/order
+import { spawn, execSync } from 'node:child_process'
 import { Command, Flags } from '@oclif/core'
-
 import { checkDaemonConnection } from '../daemon/check-daemon-connection.js'
-import { installDaemon } from '../lib/install-daemon/index.js'
+import { getInstallScriptUrl } from '../lib/install-script-url.js'
 import { daemonBinaryExists } from '../lib/start/daemon-binary-exists.js'
 import { findDaemonBinary } from '../lib/start/find-daemon-binary.js'
 import { promptForInstall } from '../lib/start/prompt-for-install.js'
@@ -110,18 +106,17 @@ export default class Start extends Command {
     }
 
     this.log('\nInstalling daemon...\n')
-    const result = await installDaemon({
-      log: msg => this.log(msg),
-      warn: msg => this.warn(msg),
-    })
 
-    if (!result.success) {
-      this.error(`Failed to install daemon: ${result.error}`)
+    try {
+      execSync(`curl -fsSL ${getInstallScriptUrl()} | sh`, {
+        stdio: 'inherit',
+        env: { ...process.env, BINARIES: 'centy-daemon' },
+      })
+    } catch {
+      this.error('Failed to install daemon')
     }
 
-    this.log(
-      `\nDaemon ${result.version} installed successfully to ${result.installPath}\n`
-    )
+    this.log('\nDaemon installed successfully\n')
     return true
   }
 

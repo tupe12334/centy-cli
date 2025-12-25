@@ -48,7 +48,7 @@ if (isVersion) {
   }
 } else if (args.length === 0) {
   // Bare invocation: launch centy-tui
-  const { launchTui } = await import('../dist/lib/launch-tui/index.js')
+  const { launchTui } = await import('../dist/lib/launch-tui/launch-tui.js')
   const result = await launchTui()
   if (!result.success) {
     console.error(result.error)

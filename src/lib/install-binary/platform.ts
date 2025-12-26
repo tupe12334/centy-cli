@@ -1,8 +1,6 @@
 /* eslint-disable ddd/require-spec-file, single-export/single-export, error/no-generic-error, error/require-custom-error, no-optional-chaining/no-optional-chaining */
 import { arch, platform } from 'node:os'
 
-export type BinaryType = 'tui' | 'daemon'
-
 interface PlatformInfo {
   os: NodeJS.Platform
   arch: string

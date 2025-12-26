@@ -56,13 +56,6 @@ export function findAsset(
   return release.assets.find(asset => asset.name === assetName)
 }
 
-export function findAssetByPattern(
-  release: GitHubRelease,
-  pattern: RegExp
-): GitHubAsset | undefined {
-  return release.assets.find(asset => pattern.test(asset.name))
-}
-
 export async function getTuiReleaseInfo(
   assetName: string,
   version?: string

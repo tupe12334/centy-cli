@@ -8,5 +8,3 @@ export interface InstallResult {
   binaryPath: string
   version: string
 }
-
-export type BinaryType = 'tui' | 'daemon'

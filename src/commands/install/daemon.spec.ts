@@ -1,15 +1,19 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createMockCommand } from '../../testing/command-test-utils.js'
 
-const mockExecSync = vi.fn()
+const mockInstallDaemon = vi.fn()
 
-vi.mock('node:child_process', () => ({
-  execSync: (...args: unknown[]) => mockExecSync(...args),
+vi.mock('../../lib/install-binary/index.js', () => ({
+  installDaemon: (...args: unknown[]) => mockInstallDaemon(...args),
 }))
 
 describe('InstallDaemon command', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockInstallDaemon.mockResolvedValue({
+      binaryPath: '/Users/test/.centy/bin/centy-daemon',
+      version: '1.0.0',
+    })
   })
 
   it('should have correct static properties', async () => {
@@ -26,7 +30,7 @@ describe('InstallDaemon command', () => {
     expect(Command.prototype.run).toBeDefined()
   })
 
-  it('should call install script with BINARIES=centy-daemon', async () => {
+  it('should call installDaemon', async () => {
     const { default: Command } = await import('./daemon.js')
 
     const cmd = createMockCommand(Command, {
@@ -36,10 +40,27 @@ describe('InstallDaemon command', () => {
 
     await cmd.run()
 
-    expect(mockExecSync).toHaveBeenCalledWith(
-      expect.stringContaining('curl -fsSL'),
+    expect(mockInstallDaemon).toHaveBeenCalledWith(
       expect.objectContaining({
-        env: expect.objectContaining({ BINARIES: 'centy-daemon' }),
+        version: undefined,
+        onProgress: expect.any(Function),
+      })
+    )
+  })
+
+  it('should pass version flag to installDaemon', async () => {
+    const { default: Command } = await import('./daemon.js')
+
+    const cmd = createMockCommand(Command, {
+      flags: { version: '0.1.0' },
+      args: {},
+    })
+
+    await cmd.run()
+
+    expect(mockInstallDaemon).toHaveBeenCalledWith(
+      expect.objectContaining({
+        version: '0.1.0',
       })
     )
   })

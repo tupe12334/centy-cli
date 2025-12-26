@@ -30,7 +30,18 @@ export async function launchTuiManager(): Promise<LaunchTuiManagerResult> {
   }
 
   return new Promise(resolve => {
-    const child = spawn(managerPath, [], { stdio: 'inherit' })
+    let child
+    try {
+      child = spawn(managerPath, [], { stdio: 'inherit' })
+    } catch (error) {
+      // spawn can throw synchronously on some platforms
+      const message = error instanceof Error ? error.message : String(error)
+      resolve({
+        success: false,
+        error: `Failed to launch TUI Manager: ${message}`,
+      })
+      return
+    }
 
     child.on('error', (error: NodeJS.ErrnoException) => {
       const errno = error.code

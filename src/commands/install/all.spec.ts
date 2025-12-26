@@ -1,15 +1,25 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createMockCommand } from '../../testing/command-test-utils.js'
 
-const mockExecSync = vi.fn()
+const mockInstallAll = vi.fn()
 
-vi.mock('node:child_process', () => ({
-  execSync: (...args: unknown[]) => mockExecSync(...args),
+vi.mock('../../lib/install-binary/index.js', () => ({
+  installAll: (...args: unknown[]) => mockInstallAll(...args),
 }))
 
 describe('InstallAll command', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockInstallAll.mockResolvedValue([
+      {
+        binaryPath: '/Users/test/.centy/bin/centy-tui',
+        version: '1.0.0',
+      },
+      {
+        binaryPath: '/Users/test/.centy/bin/centy-daemon',
+        version: '1.0.0',
+      },
+    ])
   })
 
   it('should have correct static properties', async () => {
@@ -26,7 +36,7 @@ describe('InstallAll command', () => {
     expect(Command.prototype.run).toBeDefined()
   })
 
-  it('should call install script without BINARIES filter', async () => {
+  it('should call installAll', async () => {
     const { default: Command } = await import('./all.js')
 
     const cmd = createMockCommand(Command, {
@@ -36,10 +46,27 @@ describe('InstallAll command', () => {
 
     await cmd.run()
 
-    expect(mockExecSync).toHaveBeenCalledWith(
-      expect.stringContaining('curl -fsSL'),
+    expect(mockInstallAll).toHaveBeenCalledWith(
       expect.objectContaining({
-        stdio: 'inherit',
+        version: undefined,
+        onProgress: expect.any(Function),
+      })
+    )
+  })
+
+  it('should pass version flag to installAll', async () => {
+    const { default: Command } = await import('./all.js')
+
+    const cmd = createMockCommand(Command, {
+      flags: { version: '0.1.0' },
+      args: {},
+    })
+
+    await cmd.run()
+
+    expect(mockInstallAll).toHaveBeenCalledWith(
+      expect.objectContaining({
+        version: '0.1.0',
       })
     )
   })

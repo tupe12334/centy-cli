@@ -30,7 +30,15 @@ export async function launchTui(): Promise<LaunchTuiResult> {
   }
 
   return new Promise(resolve => {
-    const child = spawn(tuiPath, [], { stdio: 'inherit' })
+    let child
+    try {
+      child = spawn(tuiPath, [], { stdio: 'inherit' })
+    } catch (error) {
+      // spawn can throw synchronously on some platforms
+      const message = error instanceof Error ? error.message : String(error)
+      resolve({ success: false, error: `Failed to launch TUI: ${message}` })
+      return
+    }
 
     child.on('error', (error: NodeJS.ErrnoException) => {
       const errno = error.code
@@ -38,6 +46,12 @@ export async function launchTui(): Promise<LaunchTuiResult> {
         resolve({ success: false, error: getMissingTuiMsg(tuiPath) })
       } else if (errno === 'EACCES') {
         resolve({ success: false, error: getPermissionDeniedMsg(tuiPath) })
+      } else if (errno === 'ENOTSUP' || errno === 'Unknown system error -88') {
+        // Binary exists but cannot be executed (e.g., wrong architecture)
+        resolve({
+          success: false,
+          error: `Cannot execute TUI binary: ${tuiPath}`,
+        })
       } else {
         resolve({
           success: false,

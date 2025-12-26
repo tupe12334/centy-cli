@@ -1,15 +1,19 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createMockCommand } from '../../testing/command-test-utils.js'
 
-const mockExecSync = vi.fn()
+const mockInstallTui = vi.fn()
 
-vi.mock('node:child_process', () => ({
-  execSync: (...args: unknown[]) => mockExecSync(...args),
+vi.mock('../../lib/install-binary/index.js', () => ({
+  installTui: (...args: unknown[]) => mockInstallTui(...args),
 }))
 
 describe('InstallTui command', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockInstallTui.mockResolvedValue({
+      binaryPath: '/Users/test/.centy/bin/centy-tui',
+      version: '1.0.0',
+    })
   })
 
   it('should have correct static properties', async () => {
@@ -26,7 +30,7 @@ describe('InstallTui command', () => {
     expect(Command.prototype.run).toBeDefined()
   })
 
-  it('should call install script with BINARIES=centy-tui', async () => {
+  it('should call installTui', async () => {
     const { default: Command } = await import('./tui.js')
 
     const cmd = createMockCommand(Command, {
@@ -36,10 +40,27 @@ describe('InstallTui command', () => {
 
     await cmd.run()
 
-    expect(mockExecSync).toHaveBeenCalledWith(
-      expect.stringContaining('curl -fsSL'),
+    expect(mockInstallTui).toHaveBeenCalledWith(
       expect.objectContaining({
-        env: expect.objectContaining({ BINARIES: 'centy-tui' }),
+        version: undefined,
+        onProgress: expect.any(Function),
+      })
+    )
+  })
+
+  it('should pass version flag to installTui', async () => {
+    const { default: Command } = await import('./tui.js')
+
+    const cmd = createMockCommand(Command, {
+      flags: { version: '0.1.0' },
+      args: {},
+    })
+
+    await cmd.run()
+
+    expect(mockInstallTui).toHaveBeenCalledWith(
+      expect.objectContaining({
+        version: '0.1.0',
       })
     )
   })

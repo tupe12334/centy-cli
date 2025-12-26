@@ -1,6 +1,5 @@
-import { execSync } from 'node:child_process'
 import { Command, Flags } from '@oclif/core'
-import { getInstallScriptUrl } from '../../lib/install-script-url.js'
+import { installDaemon } from '../../lib/install-binary/index.js'
 
 // eslint-disable-next-line custom/no-default-class-export, class-export/class-export
 export default class InstallDaemon extends Command {
@@ -24,22 +23,16 @@ export default class InstallDaemon extends Command {
   public async run(): Promise<void> {
     const { flags } = await this.parse(InstallDaemon)
 
-    const env = {
-      ...process.env,
-      BINARIES: 'centy-daemon',
-      ...(flags.version ? { VERSION: flags.version } : {}),
-    }
-
-    this.log('Installing centy-daemon...')
-
     try {
-      execSync(`curl -fsSL ${getInstallScriptUrl()} | sh`, {
-        stdio: 'inherit',
-        env,
+      const result = await installDaemon({
+        version: flags.version,
+        onProgress: message => this.log(message),
       })
-      this.log('centy-daemon installed successfully')
-    } catch {
-      this.error('Failed to install centy-daemon')
+
+      this.log(`centy-daemon v${result.version} installed successfully`)
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error)
+      this.error(`Failed to install centy-daemon: ${message}`)
     }
   }
 }

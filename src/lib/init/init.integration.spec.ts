@@ -1,4 +1,5 @@
 /* eslint-disable ddd/require-spec-file -- Integration test */
+import { join } from 'node:path'
 import { Writable } from 'node:stream'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { ReconciliationPlan, InitResponse } from '../../daemon/types.js'
@@ -85,7 +86,7 @@ describe('init integration tests', () => {
       })
 
       expect(result.success).toBe(true)
-      expect(result.centyPath).toBe('/project/.centy')
+      expect(result.centyPath).toBe(join('/project', '.centy'))
       expect(mockGetReconciliationPlan).toHaveBeenCalledWith({
         projectPath: '/project',
       })

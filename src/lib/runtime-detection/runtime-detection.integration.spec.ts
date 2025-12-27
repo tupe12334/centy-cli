@@ -410,7 +410,7 @@ describe('runtime detection wrapper', () => {
     itOnWindows('should pass arguments correctly', async () => {
       const pathWithoutBun = createPathWithoutBun()
 
-      const result = await runBatchFile(RUN_CMD, ['help'], {
+      const result = await runBatchFile(RUN_CMD, ['--help'], {
         ...process.env,
         PATH: pathWithoutBun,
       })

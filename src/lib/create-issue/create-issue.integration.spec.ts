@@ -1,4 +1,5 @@
 /* eslint-disable ddd/require-spec-file -- Integration test */
+import { join } from 'node:path'
 import { Writable } from 'node:stream'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type {
@@ -45,7 +46,7 @@ function createInitializedResponse(
 ): IsInitializedResponse {
   return {
     initialized: true,
-    centyPath: '/project/.centy',
+    centyPath: join('/project', '.centy'),
     ...overrides,
   }
 }
@@ -320,12 +321,14 @@ describe('createIssue integration tests', () => {
         output: collector.stream,
       })
 
-      expect(result.issuePath).toBe('/project/.centy/issues/0005')
+      expect(result.issuePath).toBe(
+        join('/project', '.centy', 'issues', '0005')
+      )
       expect(result.issueMarkdownPath).toBe(
-        '/project/.centy/issues/0005/issue.md'
+        join('/project', '.centy', 'issues', '0005', 'issue.md')
       )
       expect(result.metadataPath).toBe(
-        '/project/.centy/issues/0005/metadata.json'
+        join('/project', '.centy', 'issues', '0005', 'metadata.json')
       )
     })
   })
